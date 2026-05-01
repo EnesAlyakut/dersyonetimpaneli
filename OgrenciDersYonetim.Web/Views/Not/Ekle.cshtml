@@ -1,0 +1,81 @@
+@model OgrenciDersYonetim.Core.Entities.Not
+@{
+    ViewData["Title"] = "Not Ekle";
+    var ogrenci = ViewBag.Ogrenci as OgrenciDersYonetim.Core.Entities.Ogrenci;
+    var dersler = ViewBag.Dersler as List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem> ?? new();
+}
+
+<div class="page-header">
+    <div class="container">
+        <div class="d-flex align-items-center gap-3">
+            <a asp-action="OgrenciNot" asp-route-ogrenciId="@Model.OgrenciId" class="btn btn-sm btn-outline-secondary">
+                <i class="bi bi-arrow-left me-1"></i>Geri
+            </a>
+            <div>
+                <h1 class="page-title"><i class="bi bi-journal-plus me-2 text-success"></i>Not Ekle</h1>
+                <p class="page-subtitle">@ogrenci?.Ad @ogrenci?.Soyad için not girişi</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-7">
+            <div class="card">
+                <div class="card-body p-4">
+                    <form asp-action="Ekle" method="post" id="frmNotEkle">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" asp-for="OgrenciId" />
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label asp-for="DersId" class="form-label fw-semibold">Ders <span class="text-danger">*</span></label>
+                                <select asp-for="DersId" asp-items="dersler" class="form-select" id="selectNotDers">
+                                    <option value="">-- Ders Seçin --</option>
+                                </select>
+                                <span asp-validation-for="DersId" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="NotTuru" class="form-label fw-semibold">Not Türü <span class="text-danger">*</span></label>
+                                <select asp-for="NotTuru" class="form-select" id="selectNotTuru">
+                                    <option value="Vize">Vize</option>
+                                    <option value="Final">Final</option>
+                                    <option value="Ödev">Ödev</option>
+                                    <option value="Kısa Sınav">Kısa Sınav</option>
+                                    <option value="Proje">Proje</option>
+                                    <option value="Sözlü">Sözlü</option>
+                                </select>
+                                <span asp-validation-for="NotTuru" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="NotDegeri" class="form-label fw-semibold">Not (0-100) <span class="text-danger">*</span></label>
+                                <input asp-for="NotDegeri" type="number" min="0" max="100" step="0.5" class="form-control" id="inputNotDeger" />
+                                <span asp-validation-for="NotDegeri" class="text-danger small"></span>
+                            </div>
+                            <div class="col-12">
+                                <label asp-for="Aciklama" class="form-label fw-semibold">Açıklama</label>
+                                <textarea asp-for="Aciklama" class="form-control" rows="2" placeholder="Opsiyonel açıklama..." id="inputNotAciklama"></textarea>
+                                <span asp-validation-for="Aciklama" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="d-flex gap-2 mt-4">
+                            <button type="submit" class="btn btn-success" id="btnNotEkleKaydet">
+                                <i class="bi bi-check-circle me-2"></i>Notu Kaydet
+                            </button>
+                            <a asp-action="OgrenciNot" asp-route-ogrenciId="@Model.OgrenciId" class="btn btn-outline-secondary">
+                                <i class="bi bi-x-circle me-2"></i>İptal
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

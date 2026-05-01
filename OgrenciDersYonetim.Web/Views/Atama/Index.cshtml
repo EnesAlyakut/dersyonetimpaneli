@@ -1,0 +1,178 @@
+@model OgrenciDersYonetim.Web.Models.ViewModels.AtamaViewModel
+@{
+    ViewData["Title"] = "Ders Atama";
+    var rol = ViewBag.Rol as string;
+}
+
+<div class="page-header">
+    <div class="container">
+        <div>
+            <h1 class="page-title"><i class="bi bi-diagram-3-fill me-2 text-success"></i>Ders Atama Ekrani</h1>
+            <p class="page-subtitle">Ogrencilere ders atama ve kaldirma islemleri</p>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row g-4">
+        <!-- Ogrenci Secimi -->
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header">
+                    <i class="bi bi-person-check me-2 text-primary"></i>Ogrenci Sec
+                </div>
+                <div class="card-body p-0" style="max-height:400px; overflow-y:auto;">
+                    @if (Model.Ogrenciler.Any())
+                    {
+                        @foreach (var ogrenci in Model.Ogrenciler)
+                        {
+                            var isSelected = ogrenci.Id == Model.SeciliOgrenciId;
+                            <a asp-action="Index" asp-route-ogrenciId="@ogrenci.Id"
+                               class="d-flex align-items-center gap-3 p-3 text-decoration-none border-bottom @(isSelected ? "bg-primary-subtle" : "")"
+                               style="transition:background 0.15s;">
+                                <div class="avatar-sm" style="width:36px;height:36px;font-size:0.75rem;">
+                                    @ogrenci.Ad.Substring(0, 1)@ogrenci.Soyad.Substring(0, 1)
+                                </div>
+                                <div class="flex-grow-1">
+                                    <div class="fw-semibold @(isSelected ? "text-primary" : "text-dark")">@ogrenci.Ad @ogrenci.Soyad</div>
+                                    <small class="text-muted">@ogrenci.OgrenciNo</small>
+                                </div>
+                                <span class="badge @(isSelected ? "bg-primary" : "bg-light text-dark")">@ogrenci.OgrenciDersler.Count</span>
+                            </a>
+                        }
+                    }
+                    else
+                    {
+                        <div class="empty-state py-4">
+                            <i class="bi bi-people"></i>
+                            <p class="small mb-0">Ogrenci bulunamadi</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Atama Islemleri -->
+        <div class="col-lg-8">
+            @if (Model.SeciliOgrenciId.HasValue)
+            {
+                var seciliOgrenci = Model.Ogrenciler.FirstOrDefault(o => o.Id == Model.SeciliOgrenciId);
+                if (seciliOgrenci != null)
+                {
+                    <div class="alert alert-info mb-3">
+                        <i class="bi bi-person-fill me-2"></i>
+                        <strong>@seciliOgrenci.Ad @seciliOgrenci.Soyad</strong> icin ders atama islemleri
+                    </div>
+                }
+
+                <!-- Yeni Ders Ata -->
+                @if (rol == "Admin" || rol == "Ogretmen")
+                {
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <i class="bi bi-plus-circle me-2 text-success"></i>Yeni Ders Ata
+                        </div>
+                        <div class="card-body">
+                            @if (Model.AtanabilecekDersler.Any())
+                            {
+                                <form asp-action="AtamaYap" method="post" id="atamForm">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="ogrenciId" value="@Model.SeciliOgrenciId" />
+                                    <div class="d-flex gap-2">
+                                        <select name="dersId" class="form-select" id="selDers">
+                                            <option value="">-- Ders secin --</option>
+                                            @foreach (var ders in Model.AtanabilecekDersler)
+                                            {
+                                                <option value="@ders.Id">@ders.DersAdi (@ders.DersKodu) - @ders.Kredi Kredi</option>
+                                            }
+                                        </select>
+                                        <button type="submit" class="btn btn-success flex-shrink-0" id="btnAtamaYap">
+                                            <i class="bi bi-check-circle me-1"></i>Ata
+                                        </button>
+                                    </div>
+                                </form>
+                            }
+                            else
+                            {
+                                <div class="text-center text-muted py-2">
+                                    <i class="bi bi-check-all me-1 text-success"></i>
+                                    Tum dersler bu ogrenciye atanmis.
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+
+                <!-- Mevcut Atamalar -->
+                <div class="card">
+                    <div class="card-header d-flex align-items-center justify-content-between">
+                        <span><i class="bi bi-journal-check me-2 text-primary"></i>Atanmis Dersler</span>
+                        <span class="badge bg-primary">@Model.MevcutAtamalar.Count</span>
+                    </div>
+                    <div class="card-body p-0">
+                        @if (Model.MevcutAtamalar.Any())
+                        {
+                            <table class="table mb-0" id="tblMevcutAtamalar">
+                                <thead>
+                                    <tr>
+                                        <th>Ders</th>
+                                        <th>Kod</th>
+                                        <th>Kredi</th>
+                                        <th>Atama Tarihi</th>
+                                        @if (rol == "Admin" || rol == "Ogretmen")
+                                        {
+                                            <th class="text-end">Islem</th>
+                                        }
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var atama in Model.MevcutAtamalar)
+                                    {
+                                        <tr>
+                                            <td class="fw-semibold">@atama.Ders.DersAdi</td>
+                                            <td><span class="ogrenci-no">@atama.Ders.DersKodu</span></td>
+                                            <td><span class="badge bg-info text-white">@atama.Ders.Kredi</span></td>
+                                            <td class="text-muted small">@atama.AtamaTarihi.ToString("dd.MM.yyyy")</td>
+                                            @if (rol == "Admin" || rol == "Ogretmen")
+                                            {
+                                                <td class="text-end">
+                                                    <form asp-action="AtamaKaldir" method="post" style="display:inline;"
+                                                          onsubmit="return confirm('@atama.Ders.DersAdi dersini kaldiirmak istiyor musunuz?')">
+                                                        @Html.AntiForgeryToken()
+                                                        <input type="hidden" name="ogrenciId" value="@Model.SeciliOgrenciId" />
+                                                        <input type="hidden" name="dersId" value="@atama.DersId" />
+                                                        <button type="submit" class="btn btn-sm btn-outline-danger" title="Kaldir">
+                                                            <i class="bi bi-x-circle"></i>
+                                                        </button>
+                                                    </form>
+                                                </td>
+                                            }
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        }
+                        else
+                        {
+                            <div class="empty-state py-4">
+                                <i class="bi bi-journal-x"></i>
+                                <h5>Atanmis Ders Yok</h5>
+                                <p class="small">Bu ogrenciye henuz ders atanmamis.</p>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="card">
+                    <div class="card-body empty-state py-5">
+                        <i class="bi bi-arrow-left-circle" style="font-size:3rem; opacity:0.2;"></i>
+                        <h5>Ogrenci Seciniz</h5>
+                        <p class="small">Ders atama islemleri icin sol taraftaki listeden bir ogrenci seciniz.</p>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>

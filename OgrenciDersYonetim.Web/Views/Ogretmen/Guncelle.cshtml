@@ -1,0 +1,75 @@
+@model OgrenciDersYonetim.Core.Entities.Ogretmen
+@{
+    ViewData["Title"] = "Öğretmen Düzenle";
+}
+
+<div class="page-header">
+    <div class="container">
+        <div class="d-flex align-items-center gap-3">
+            <a asp-action="Index" class="btn btn-sm btn-outline-secondary">
+                <i class="bi bi-arrow-left me-1"></i>Geri
+            </a>
+            <div>
+                <h1 class="page-title"><i class="bi bi-pencil-square me-2 text-warning"></i>Öğretmen Düzenle</h1>
+                <p class="page-subtitle">@Model.Ad @Model.Soyad bilgilerini düzenleyin</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-body p-4">
+                    <form asp-action="Guncelle" method="post" id="frmOgretmenGuncelle">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" asp-for="Id" />
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label asp-for="Ad" class="form-label fw-semibold">Ad <span class="text-danger">*</span></label>
+                                <input asp-for="Ad" class="form-control" id="inputOgretmenAdGuncelle" />
+                                <span asp-validation-for="Ad" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="Soyad" class="form-label fw-semibold">Soyad <span class="text-danger">*</span></label>
+                                <input asp-for="Soyad" class="form-control" id="inputOgretmenSoyadGuncelle" />
+                                <span asp-validation-for="Soyad" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="Brans" class="form-label fw-semibold">Branş</label>
+                                <input asp-for="Brans" class="form-control" id="inputBransGuncelle" />
+                                <span asp-validation-for="Brans" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="Telefon" class="form-label fw-semibold">Telefon</label>
+                                <input asp-for="Telefon" class="form-control" id="inputOgretmenTelefonGuncelle" />
+                                <span asp-validation-for="Telefon" class="text-danger small"></span>
+                            </div>
+                            <div class="col-12">
+                                <label asp-for="Email" class="form-label fw-semibold">E-posta</label>
+                                <input asp-for="Email" type="email" class="form-control" id="inputOgretmenEmailGuncelle" />
+                                <span asp-validation-for="Email" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="d-flex gap-2 mt-4">
+                            <button type="submit" class="btn btn-warning" id="btnOgretmenGuncelleKaydet">
+                                <i class="bi bi-check-circle me-2"></i>Güncelle
+                            </button>
+                            <a asp-action="Index" class="btn btn-outline-secondary">
+                                <i class="bi bi-x-circle me-2"></i>İptal
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

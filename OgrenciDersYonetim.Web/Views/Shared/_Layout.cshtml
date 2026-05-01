@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Kampüs Panel - Modern eğitim yönetim platformu" />
+    <title>@ViewData["Title"] - Kampüs Panel</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+    @{
+        var kullaniciAd = Context.Session.GetString("KullaniciAd");
+        var kullaniciSoyad = Context.Session.GetString("KullaniciSoyad");
+        var kullaniciRol = Context.Session.GetString("KullaniciRol");
+        var isLoggedIn = Context.Session.GetInt32("KullaniciId") != null;
+    }
+
+    @if (isLoggedIn)
+    {
+        <nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="mainNavbar">
+            <div class="container">
+                <a class="navbar-brand d-flex align-items-center gap-2" asp-controller="Home" asp-action="Index">
+                    <div class="brand-icon">
+                        <i class="bi bi-mortarboard-fill"></i>
+                    </div>
+                    <span>Kampüs Panel</span>
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav me-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Home" asp-action="Index">
+                                <i class="bi bi-speedometer2 me-1"></i>Dashboard
+                            </a>
+                        </li>
+                        @if (kullaniciRol == "Admin")
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Ogrenci" asp-action="Index">
+                                    <i class="bi bi-people-fill me-1"></i>Öğrenciler
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Ogretmen" asp-action="Index">
+                                    <i class="bi bi-person-video3 me-1"></i>Öğretmenler
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Ders" asp-action="Index">
+                                    <i class="bi bi-book-fill me-1"></i>Dersler
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Atama" asp-action="Index">
+                                    <i class="bi bi-link-45deg me-1"></i>Ders Atama
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Devamsizlik" asp-action="DersDevamsizlik">
+                                    <i class="bi bi-calendar-x me-1"></i>Devamsızlık
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Not" asp-action="DersNot">
+                                    <i class="bi bi-journal-check me-1"></i>Not Yönetimi
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Account" asp-action="SifreYonetimi">
+                                    <i class="bi bi-key-fill me-1"></i>Şifre Yönetimi
+                                </a>
+                            </li>
+                        }
+                        @if (kullaniciRol == "Ogretmen")
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Ogretmen" asp-action="Panelim">
+                                    <i class="bi bi-journal-text me-1"></i>Panelim
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Ogrenci" asp-action="Index">
+                                    <i class="bi bi-people-fill me-1"></i>Öğrencilerim
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Devamsizlik" asp-action="DersDevamsizlik">
+                                    <i class="bi bi-calendar-x me-1"></i>Devamsızlık
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Not" asp-action="DersNot">
+                                    <i class="bi bi-journal-check me-1"></i>Not Yönetimi
+                                </a>
+                            </li>
+                        }
+                        @if (kullaniciRol == "Ogrenci")
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Ders" asp-action="Index">
+                                    <i class="bi bi-book-fill me-1"></i>Derslerim
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle d-flex align-items-center gap-2" href="#" data-bs-toggle="dropdown">
+                                <div class="avatar-sm">
+                                    @(kullaniciAd?.Substring(0, 1).ToUpper())@(kullaniciSoyad?.Substring(0, 1).ToUpper())
+                                </div>
+                                <div class="d-none d-md-block">
+                                    <div class="fw-semibold lh-1">@kullaniciAd @kullaniciSoyad</div>
+                                    <small class="role-badge @(kullaniciRol?.ToLower())">@kullaniciRol</small>
+                                </div>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end shadow">
+                                <li><a class="dropdown-item" asp-controller="Account" asp-action="Profil"><i class="bi bi-person-circle me-2"></i>Profilim</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <a class="dropdown-item text-danger" asp-controller="Account" asp-action="Logout">
+                                        <i class="bi bi-box-arrow-right me-2"></i>Çıkış Yap
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        <div class="navbar-spacer"></div>
+    }
+
+    <main class="@(isLoggedIn ? "main-content" : "")">
+        @if (TempData["Basari"] != null)
+        {
+            <div class="container mt-3">
+                <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+                    <i class="bi bi-check-circle-fill me-2"></i>@TempData["Basari"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            </div>
+        }
+        @if (TempData["Hata"] != null)
+        {
+            <div class="container mt-3">
+                <div class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>@TempData["Hata"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            </div>
+        }
+
+        @RenderBody()
+    </main>
+
+    @if (isLoggedIn)
+    {
+        <footer class="footer mt-auto py-3">
+            <div class="container text-center">
+                <small class="text-muted">
+                    &copy; @DateTime.Now.Year Kampüs Panel &nbsp;|&nbsp;
+                    <i class="bi bi-shield-check text-success"></i> Güvenli Bağlantı
+                </small>
+            </div>
+        </footer>
+    }
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

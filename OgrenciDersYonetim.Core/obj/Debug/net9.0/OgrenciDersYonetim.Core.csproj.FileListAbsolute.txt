@@ -1,0 +1,12 @@
+C:\Users\enesa\OneDrive\Masaüstü\proje ödevi\OgrenciDersYonetim.Core\bin\Debug\net9.0\OgrenciDersYonetim.Core.deps.json
+C:\Users\enesa\OneDrive\Masaüstü\proje ödevi\OgrenciDersYonetim.Core\bin\Debug\net9.0\OgrenciDersYonetim.Core.dll
+C:\Users\enesa\OneDrive\Masaüstü\proje ödevi\OgrenciDersYonetim.Core\bin\Debug\net9.0\OgrenciDersYonetim.Core.pdb
+C:\Users\enesa\OneDrive\Masaüstü\proje ödevi\OgrenciDersYonetim.Core\obj\Debug\net9.0\OgrenciDersYonetim.Core.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\enesa\OneDrive\Masaüstü\proje ödevi\OgrenciDersYonetim.Core\obj\Debug\net9.0\OgrenciDersYonetim.Core.AssemblyInfoInputs.cache
+C:\Users\enesa\OneDrive\Masaüstü\proje ödevi\OgrenciDersYonetim.Core\obj\Debug\net9.0\OgrenciDersYonetim.Core.AssemblyInfo.cs
+C:\Users\enesa\OneDrive\Masaüstü\proje ödevi\OgrenciDersYonetim.Core\obj\Debug\net9.0\OgrenciDersYonetim.Core.csproj.CoreCompileInputs.cache
+C:\Users\enesa\OneDrive\Masaüstü\proje ödevi\OgrenciDersYonetim.Core\obj\Debug\net9.0\OgrenciDersYonetim.Core.sourcelink.json
+C:\Users\enesa\OneDrive\Masaüstü\proje ödevi\OgrenciDersYonetim.Core\obj\Debug\net9.0\OgrenciDersYonetim.Core.dll
+C:\Users\enesa\OneDrive\Masaüstü\proje ödevi\OgrenciDersYonetim.Core\obj\Debug\net9.0\refint\OgrenciDersYonetim.Core.dll
+C:\Users\enesa\OneDrive\Masaüstü\proje ödevi\OgrenciDersYonetim.Core\obj\Debug\net9.0\OgrenciDersYonetim.Core.pdb
+C:\Users\enesa\OneDrive\Masaüstü\proje ödevi\OgrenciDersYonetim.Core\obj\Debug\net9.0\ref\OgrenciDersYonetim.Core.dll

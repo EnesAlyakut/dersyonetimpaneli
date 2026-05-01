@@ -1,0 +1,169 @@
+is_global = true
+build_property.TargetFramework = net9.0
+build_property.TargetFramework = net9.0
+build_property.TargetPlatformMinVersion = 
+build_property.TargetPlatformMinVersion = 
+build_property.UsingMicrosoftNETSdkWeb = true
+build_property.UsingMicrosoftNETSdkWeb = true
+build_property.ProjectTypeGuids = 
+build_property.ProjectTypeGuids = 
+build_property.InvariantGlobalization = 
+build_property.InvariantGlobalization = 
+build_property.PlatformNeutralAssembly = 
+build_property.PlatformNeutralAssembly = 
+build_property.EnforceExtendedAnalyzerRules = 
+build_property.EnforceExtendedAnalyzerRules = 
+build_property._SupportedPlatformList = Linux,macOS,Windows
+build_property._SupportedPlatformList = Linux,macOS,Windows
+build_property.RootNamespace = OgrenciDersYonetim.Web
+build_property.RootNamespace = OgrenciDersYonetim.Web
+build_property.ProjectDir = C:\Users\enesa\OneDrive\Masaüstü\proje ödevi\OgrenciDersYonetim.Web\
+build_property.EnableComHosting = 
+build_property.EnableGeneratedComInterfaceComImportInterop = 
+build_property.RazorLangVersion = 9.0
+build_property.SupportLocalizedComponentNames = 
+build_property.GenerateRazorMetadataSourceChecksumAttributes = 
+build_property.MSBuildProjectDirectory = C:\Users\enesa\OneDrive\Masaüstü\proje ödevi\OgrenciDersYonetim.Web
+build_property._RazorSourceGeneratorDebug = 
+build_property.EffectiveAnalysisLevelStyle = 9.0
+build_property.EnableCodeStyleSeverity = 
+
+[C:/Users/enesa/OneDrive/Masaüstü/proje ödevi/OgrenciDersYonetim.Web/Views/Account/Login.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxMb2dpbi5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/enesa/OneDrive/Masaüstü/proje ödevi/OgrenciDersYonetim.Web/Views/Account/Profil.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxQcm9maWwuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/enesa/OneDrive/Masaüstü/proje ödevi/OgrenciDersYonetim.Web/Views/Account/Register.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxSZWdpc3Rlci5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/enesa/OneDrive/Masaüstü/proje ödevi/OgrenciDersYonetim.Web/Views/Account/SifreYonetimi.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxTaWZyZVlvbmV0aW1pLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/enesa/OneDrive/Masaüstü/proje ödevi/OgrenciDersYonetim.Web/Views/Atama/DersDetay.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXRhbWFcRGVyc0RldGF5LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/enesa/OneDrive/Masaüstü/proje ödevi/OgrenciDersYonetim.Web/Views/Atama/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXRhbWFcSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/enesa/OneDrive/Masaüstü/proje ödevi/OgrenciDersYonetim.Web/Views/Ders/Detay.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRGVyc1xEZXRheS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/enesa/OneDrive/Masaüstü/proje ödevi/OgrenciDersYonetim.Web/Views/Ders/Ekle.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRGVyc1xFa2xlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/enesa/OneDrive/Masaüstü/proje ödevi/OgrenciDersYonetim.Web/Views/Ders/EkleGuncelle.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRGVyc1xFa2xlR3VuY2VsbGUuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/enesa/OneDrive/Masaüstü/proje ödevi/OgrenciDersYonetim.Web/Views/Ders/Guncelle.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRGVyc1xHdW5jZWxsZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/enesa/OneDrive/Masaüstü/proje ödevi/OgrenciDersYonetim.Web/Views/Ders/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRGVyc1xJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/enesa/OneDrive/Masaüstü/proje ödevi/OgrenciDersYonetim.Web/Views/Devamsizlik/DersDevamsizlik.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRGV2YW1zaXpsaWtcRGVyc0RldmFtc2l6bGlrLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/enesa/OneDrive/Masaüstü/proje ödevi/OgrenciDersYonetim.Web/Views/Devamsizlik/Ekle.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRGV2YW1zaXpsaWtcRWtsZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/enesa/OneDrive/Masaüstü/proje ödevi/OgrenciDersYonetim.Web/Views/Devamsizlik/OgrenciDevamsizlik.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRGV2YW1zaXpsaWtcT2dyZW5jaURldmFtc2l6bGlrLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/enesa/OneDrive/Masaüstü/proje ödevi/OgrenciDersYonetim.Web/Views/Home/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/enesa/OneDrive/Masaüstü/proje ödevi/OgrenciDersYonetim.Web/Views/Home/Privacy.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxQcml2YWN5LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/enesa/OneDrive/Masaüstü/proje ödevi/OgrenciDersYonetim.Web/Views/Home/YetkiHatasi.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxZZXRraUhhdGFzaS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/enesa/OneDrive/Masaüstü/proje ödevi/OgrenciDersYonetim.Web/Views/Not/DersNot.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTm90XERlcnNOb3QuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/enesa/OneDrive/Masaüstü/proje ödevi/OgrenciDersYonetim.Web/Views/Not/Ekle.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTm90XEVrbGUuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/enesa/OneDrive/Masaüstü/proje ödevi/OgrenciDersYonetim.Web/Views/Not/OgrenciNot.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTm90XE9ncmVuY2lOb3QuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/enesa/OneDrive/Masaüstü/proje ödevi/OgrenciDersYonetim.Web/Views/Ogrenci/Detay.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcT2dyZW5jaVxEZXRheS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/enesa/OneDrive/Masaüstü/proje ödevi/OgrenciDersYonetim.Web/Views/Ogrenci/Ekle.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcT2dyZW5jaVxFa2xlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/enesa/OneDrive/Masaüstü/proje ödevi/OgrenciDersYonetim.Web/Views/Ogrenci/Guncelle.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcT2dyZW5jaVxHdW5jZWxsZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/enesa/OneDrive/Masaüstü/proje ödevi/OgrenciDersYonetim.Web/Views/Ogrenci/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcT2dyZW5jaVxJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/enesa/OneDrive/Masaüstü/proje ödevi/OgrenciDersYonetim.Web/Views/Ogretmen/Detay.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcT2dyZXRtZW5cRGV0YXkuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/enesa/OneDrive/Masaüstü/proje ödevi/OgrenciDersYonetim.Web/Views/Ogretmen/Ekle.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcT2dyZXRtZW5cRWtsZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/enesa/OneDrive/Masaüstü/proje ödevi/OgrenciDersYonetim.Web/Views/Ogretmen/Guncelle.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcT2dyZXRtZW5cR3VuY2VsbGUuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/enesa/OneDrive/Masaüstü/proje ödevi/OgrenciDersYonetim.Web/Views/Ogretmen/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcT2dyZXRtZW5cSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/enesa/OneDrive/Masaüstü/proje ödevi/OgrenciDersYonetim.Web/Views/Ogretmen/Panelim.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcT2dyZXRtZW5cUGFuZWxpbS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/enesa/OneDrive/Masaüstü/proje ödevi/OgrenciDersYonetim.Web/Views/Shared/Error.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXEVycm9yLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/enesa/OneDrive/Masaüstü/proje ödevi/OgrenciDersYonetim.Web/Views/Shared/_DersIcerikPanel.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9EZXJzSWNlcmlrUGFuZWwuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/enesa/OneDrive/Masaüstü/proje ödevi/OgrenciDersYonetim.Web/Views/Shared/_ValidationScriptsPartial.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9WYWxpZGF0aW9uU2NyaXB0c1BhcnRpYWwuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/enesa/OneDrive/Masaüstü/proje ödevi/OgrenciDersYonetim.Web/Views/_ViewImports.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdJbXBvcnRzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/enesa/OneDrive/Masaüstü/proje ödevi/OgrenciDersYonetim.Web/Views/_ViewStart.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdTdGFydC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/enesa/OneDrive/Masaüstü/proje ödevi/OgrenciDersYonetim.Web/Views/Shared/_Layout.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9MYXlvdXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = b-cym7i55ah1

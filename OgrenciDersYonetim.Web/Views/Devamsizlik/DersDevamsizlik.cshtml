@@ -1,0 +1,344 @@
+@model List<OgrenciDersYonetim.Core.Entities.Ders>
+@using OgrenciDersYonetim.Core.Entities
+@{
+    ViewData["Title"] = "Devamsızlık Yönetimi";
+    var rol = ViewBag.Rol as string;
+    var dersOgrencileri = ViewBag.DersOgrencileri as Dictionary<int, List<OgrenciDers>> ?? new();
+    var dersDevamsizliklari = ViewBag.DersDevamsizliklari as Dictionary<int, List<Devamsizlik>> ?? new();
+}
+
+<div class="page-header">
+    <div class="container">
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+            <div>
+                <h1 class="page-title">
+                    <i class="bi bi-calendar-x me-2 text-danger"></i>Devamsızlık Yönetimi
+                </h1>
+                <p class="page-subtitle">
+                    @if (rol == "Admin")
+                    {
+                        <span>Tüm dersler — ders bazlı devamsızlık takibi</span>
+                    }
+                    else
+                    {
+                        <span>Atandığınız dersler — öğrenci devamsızlık takibi</span>
+                    }
+                </p>
+            </div>
+            <div class="d-flex gap-2 align-items-center">
+                <!-- Özet badge -->
+                <span class="badge bg-primary fs-6">@Model.Count ders</span>
+                <span class="badge bg-danger fs-6">@dersDevamsizliklari.Values.Sum(d => d.Count) toplam devamsızlık</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+
+    @if (TempData["Basari"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show mb-3" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i>@TempData["Basari"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+    @if (TempData["Hata"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show mb-3" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>@TempData["Hata"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (!Model.Any())
+    {
+        <div class="card">
+            <div class="card-body">
+                <div class="empty-state py-4">
+                    <i class="bi bi-journal-x"></i>
+                    <h5>Ders Bulunamadı</h5>
+                    <p class="small">
+                        @if (rol == "Ogretmen")
+                        {
+                            <span>Size henüz ders atanmamış. Yöneticinizle iletişime geçin.</span>
+                        }
+                        else
+                        {
+                            <span>Sistemde ders bulunmuyor.</span>
+                        }
+                    </p>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <!-- Ders tabları (sekmeler) -->
+        <ul class="nav nav-tabs mb-0 border-bottom-0" id="dersTabList" role="tablist" style="flex-wrap:wrap;">
+            @for (int i = 0; i < Model.Count; i++)
+            {
+                var ders = Model[i];
+                var ogrenciler = dersOgrencileri.ContainsKey(ders.Id) ? dersOgrencileri[ders.Id] : new List<OgrenciDers>();
+                var devamsizliklar = dersDevamsizliklari.ContainsKey(ders.Id) ? dersDevamsizliklari[ders.Id] : new List<Devamsizlik>();
+                var toplamDev = devamsizliklar.Count;
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link @(i == 0 ? "active" : "")"
+                            id="tab-@ders.Id"
+                            data-bs-toggle="tab"
+                            data-bs-target="#ders-@ders.Id"
+                            type="button" role="tab">
+                        <i class="bi bi-book-fill me-1 text-primary"></i>
+                        @ders.DersAdi
+                        <span class="badge bg-secondary ms-1">@ogrenciler.Count öğ</span>
+                        @if (toplamDev > 0)
+                        {
+                            <span class="badge bg-danger ms-1">@toplamDev dev</span>
+                        }
+                    </button>
+                </li>
+            }
+        </ul>
+
+        <!-- Ders içerikleri -->
+        <div class="tab-content" id="dersTabContent">
+            @for (int i = 0; i < Model.Count; i++)
+            {
+                var ders = Model[i];
+                var ogrenciler = dersOgrencileri.ContainsKey(ders.Id) ? dersOgrencileri[ders.Id] : new List<OgrenciDers>();
+                var devamsizliklar = dersDevamsizliklari.ContainsKey(ders.Id) ? dersDevamsizliklari[ders.Id] : new List<Devamsizlik>();
+
+                <div class="tab-pane fade @(i == 0 ? "show active" : "")"
+                     id="ders-@ders.Id" role="tabpanel">
+                    <div class="card" style="border-top-left-radius:0; border-top:none;">
+                        <!-- Ders Başlığı -->
+                        <div class="card-header d-flex align-items-center justify-content-between flex-wrap gap-2">
+                            <div class="d-flex align-items-center gap-2 flex-wrap">
+                                <strong>@ders.DersAdi</strong>
+                                <span class="ogrenci-no">@ders.DersKodu</span>
+                                <span class="badge bg-info text-white">@ders.Kredi Kredi</span>
+                                <span class="badge bg-secondary">@ogrenciler.Count öğrenci</span>
+                                <span class="badge bg-danger">@devamsizliklar.Count toplam devamsızlık</span>
+                            </div>
+                            <!-- Tüm öğrencilere bugün devamsızlık ekle -->
+                            <button type="button" class="btn btn-sm btn-outline-danger"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#topluEkle-@ders.Id"
+                                    id="btnTopluEkle_@ders.Id">
+                                <i class="bi bi-calendar-plus me-1"></i>Toplu Devamsızlık
+                            </button>
+                        </div>
+
+                        <!-- Toplu Devamsızlık Paneli -->
+                        <div class="collapse" id="topluEkle-@ders.Id">
+                            <div class="p-3 border-bottom" style="background:#fff8f8;">
+                                <h6 class="text-danger mb-3">
+                                    <i class="bi bi-exclamation-triangle me-1"></i>
+                                    Birden fazla öğrenciye aynı anda devamsızlık ekle
+                                </h6>
+                                <form asp-action="TopluDevamsizlikEkle" method="post" id="frmToplu_@ders.Id">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="dersId" value="@ders.Id" />
+                                    <div class="row g-2 align-items-end mb-3">
+                                        <div class="col-md-3">
+                                            <label class="form-label small fw-semibold">Tarih</label>
+                                            <input type="date" name="tarih" class="form-control form-control-sm"
+                                                   value="@DateTime.Today.ToString("yyyy-MM-dd")"
+                                                   id="topluTarih_@ders.Id" />
+                                        </div>
+                                        <div class="col-md-5">
+                                            <label class="form-label small fw-semibold">Açıklama (opsiyonel)</label>
+                                            <input type="text" name="aciklama" class="form-control form-control-sm"
+                                                   placeholder="örn: Gelmedi" id="topluAciklama_@ders.Id" />
+                                        </div>
+                                    </div>
+                                    <div class="row g-2">
+                                        @foreach (var od in ogrenciler)
+                                        {
+                                            <div class="col-md-4 col-lg-3">
+                                                <div class="form-check border rounded p-2">
+                                                    <input class="form-check-input" type="checkbox"
+                                                           name="ogrenciIdler"
+                                                           value="@od.OgrenciId"
+                                                           id="topluChk_@(ders.Id)_@od.OgrenciId" />
+                                                    <label class="form-check-label small" for="topluChk_@(ders.Id)_@od.OgrenciId">
+                                                        <strong>@od.Ogrenci?.Ad @od.Ogrenci?.Soyad</strong>
+                                                        <div class="text-muted" style="font-size:.7rem;">@od.Ogrenci?.OgrenciNo</div>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+                                    <div class="mt-3">
+                                        <button type="submit" class="btn btn-danger btn-sm" id="btnTopluKaydet_@ders.Id">
+                                            <i class="bi bi-save me-1"></i>Seçilenlere Devamsızlık Ekle
+                                        </button>
+                                        <button type="button" class="btn btn-secondary btn-sm ms-2"
+                                                data-bs-toggle="collapse"
+                                                data-bs-target="#topluEkle-@ders.Id">
+                                            İptal
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+
+                        <!-- Öğrenci Listesi -->
+                        <div class="card-body p-0">
+                            @if (!ogrenciler.Any())
+                            {
+                                <div class="p-4 text-center text-muted">
+                                    <i class="bi bi-people me-1"></i>Bu derse kayıtlı öğrenci bulunmuyor.
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="table-responsive">
+                                    <table class="table table-hover mb-0" id="tblDevamsizlik_@ders.Id">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th class="ps-3">Öğrenci</th>
+                                                <th>Öğrenci No</th>
+                                                <th class="text-center">Devamsızlık</th>
+                                                <th>Hızlı Ekle</th>
+                                                <th>Geçmiş Kayıtlar</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var od in ogrenciler)
+                                            {
+                                                var ogrenciDev = devamsizliklar
+                                                    .Where(d => d.OgrenciId == od.OgrenciId)
+                                                    .OrderByDescending(d => d.Tarih)
+                                                    .ToList();
+                                                var devSayisi = ogrenciDev.Count;
+                                                var devClass = devSayisi >= 7 ? "danger" : devSayisi >= 4 ? "warning" : "success";
+                                                var rowClass = devSayisi >= 7 ? "table-danger" : devSayisi >= 4 ? "table-warning" : "";
+
+                                                <tr class="@rowClass" id="row_@(od.OgrenciId)_@ders.Id">
+                                                    <td class="ps-3">
+                                                        <div class="d-flex align-items-center gap-2">
+                                                            <div class="avatar-sm" style="width:34px;height:34px;font-size:.7rem;">
+                                                                @od.Ogrenci?.Ad.Substring(0, 1)@od.Ogrenci?.Soyad.Substring(0, 1)
+                                                            </div>
+                                                            <div>
+                                                                <div class="fw-semibold small">@od.Ogrenci?.Ad @od.Ogrenci?.Soyad</div>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td><span class="ogrenci-no">@od.Ogrenci?.OgrenciNo</span></td>
+                                                    <td class="text-center">
+                                                        <span class="badge bg-@devClass fs-6">
+                                                            @devSayisi gün
+                                                        </span>
+                                                        @if (devSayisi >= 7)
+                                                        {
+                                                            <div><small class="text-danger fw-bold">⚠ Sınır aşıldı!</small></div>
+                                                        }
+                                                        else if (devSayisi >= 4)
+                                                        {
+                                                            <div><small class="text-warning fw-bold">⚡ Riskli</small></div>
+                                                        }
+                                                    </td>
+                                                    <td>
+                                                        <!-- Hızlı Devamsızlık Ekleme Formu -->
+                                                        <form asp-action="HizliEkle" method="post"
+                                                              class="d-flex gap-1 align-items-center flex-wrap"
+                                                              id="frmHizli_@(od.OgrenciId)_@ders.Id">
+                                                            @Html.AntiForgeryToken()
+                                                            <input type="hidden" name="ogrenciId" value="@od.OgrenciId" />
+                                                            <input type="hidden" name="dersId" value="@ders.Id" />
+                                                            <input type="date" name="tarih"
+                                                                   value="@DateTime.Today.ToString("yyyy-MM-dd")"
+                                                                   class="form-control form-control-sm"
+                                                                   style="width:130px;"
+                                                                   id="tarih_@(od.OgrenciId)_@ders.Id" />
+                                                            <input type="text" name="aciklama"
+                                                                   placeholder="Not (opsiyonel)"
+                                                                   class="form-control form-control-sm"
+                                                                   style="width:110px;"
+                                                                   id="aciklama_@(od.OgrenciId)_@ders.Id" />
+                                                            <button type="submit"
+                                                                    class="btn btn-danger btn-sm"
+                                                                    title="Devamsızlık Ekle"
+                                                                    id="btnHizliEkle_@(od.OgrenciId)_@ders.Id">
+                                                                <i class="bi bi-calendar-x me-1"></i>Devamsız
+                                                            </button>
+                                                        </form>
+                                                    </td>
+                                                    <td>
+                                                        <!-- Geçmiş Devamsızlık Kayıtları -->
+                                                        @if (ogrenciDev.Any())
+                                                        {
+                                                            <details>
+                                                                <summary class="btn btn-sm btn-outline-secondary" style="cursor:pointer;display:inline-block;">
+                                                                    <i class="bi bi-clock-history me-1"></i>@ogrenciDev.Count kayıt
+                                                                </summary>
+                                                                <div class="mt-1">
+                                                                    @foreach (var dev in ogrenciDev)
+                                                                    {
+                                                                        <div class="d-flex align-items-center gap-1 mb-1 flex-wrap">
+                                                                            <span class="badge bg-danger">
+                                                                                <i class="bi bi-calendar2-x me-1"></i>@dev.Tarih.ToString("dd.MM.yyyy")
+                                                                            </span>
+                                                                            @if (!string.IsNullOrEmpty(dev.Aciklama))
+                                                                            {
+                                                                                <small class="text-muted">@dev.Aciklama</small>
+                                                                            }
+                                                                            <form asp-action="HizliSil" method="post" style="display:inline;">
+                                                                                @Html.AntiForgeryToken()
+                                                                                <input type="hidden" name="devamsizlikId" value="@dev.Id" />
+                                                                                <button type="submit"
+                                                                                        class="btn btn-xs btn-outline-danger p-0 px-1"
+                                                                                        style="font-size:.7rem;line-height:1.4;"
+                                                                                        onclick="return confirm('Bu devamsızlık kaydını sil?')"
+                                                                                        title="Kaydı Sil"
+                                                                                        id="btnDevSil_@dev.Id">
+                                                                                    <i class="bi bi-trash"></i>
+                                                                                </button>
+                                                                            </form>
+                                                                        </div>
+                                                                    }
+                                                                </div>
+                                                            </details>
+                                                        }
+                                                        else
+                                                        {
+                                                            <span class="text-muted small"><i class="bi bi-check-circle me-1 text-success"></i>Kayıt yok</span>
+                                                        }
+                                                    </td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <!-- Ders Özeti -->
+                                <div class="p-3 border-top d-flex gap-4 flex-wrap" style="background:#f8fafc; font-size:.82rem;">
+                                    <span class="text-muted">
+                                        <i class="bi bi-people-fill me-1 text-primary"></i>
+                                        <strong>@ogrenciler.Count</strong> öğrenci kayıtlı
+                                    </span>
+                                    <span class="text-muted">
+                                        <i class="bi bi-calendar-x me-1 text-danger"></i>
+                                        Toplam <strong>@devamsizliklar.Count</strong> devamsızlık kaydı
+                                    </span>
+                                    <span class="text-muted">
+                                        <i class="bi bi-exclamation-triangle me-1 text-warning"></i>
+                                        <strong>@ogrenciler.Count(od => (devamsizliklar.Where(d => d.OgrenciId == od.OgrenciId).Count()) >= 4)</strong>
+                                        öğrenci riskli durumda
+                                    </span>
+                                    <span class="text-muted">
+                                        <i class="bi bi-x-circle me-1 text-danger"></i>
+                                        <strong>@ogrenciler.Count(od => (devamsizliklar.Where(d => d.OgrenciId == od.OgrenciId).Count()) >= 7)</strong>
+                                        öğrenci sınır aştı
+                                    </span>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

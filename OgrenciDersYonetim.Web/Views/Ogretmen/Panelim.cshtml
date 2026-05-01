@@ -1,0 +1,150 @@
+@model List<OgrenciDersYonetim.Core.Entities.Ders>
+@{
+    ViewData["Title"] = "Panelim";
+    var ogretmen = ViewBag.Ogretmen as OgrenciDersYonetim.Core.Entities.Ogretmen;
+}
+
+<div class="page-header">
+    <div class="container">
+        <div class="d-flex align-items-center gap-3">
+            <div>
+                <h1 class="page-title"><i class="bi bi-person-video3 me-2 text-warning"></i>Öğretmen Panelim</h1>
+                <p class="page-subtitle">
+                    @if (ogretmen != null)
+                    {
+                        @($"Hoşgeldiniz, {ogretmen.Ad} {ogretmen.Soyad}")
+                        if (!string.IsNullOrEmpty(ogretmen.Brans))
+                        {
+                            <span class="ms-2 badge bg-warning text-dark">@ogretmen.Brans</span>
+                        }
+                    }
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    @if (!Model.Any())
+    {
+        <div class="alert alert-warning shadow-sm">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+            Henüz size atanmış bir ders bulunmamaktadır. Lütfen yöneticinizle iletişime geçin.
+        </div>
+    }
+    else
+    {
+        <!-- İstatistik Kartları -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-4">
+                <div class="card text-center p-3">
+                    <div class="text-muted small mb-1">Toplam Ders</div>
+                    <div class="fw-bold fs-3 text-primary">@Model.Count</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card text-center p-3">
+                    <div class="text-muted small mb-1">Toplam Öğrenci</div>
+                    <div class="fw-bold fs-3 text-success">@Model.Sum(d => d.OgrenciDersler.Count)</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card text-center p-3">
+                    <div class="text-muted small mb-1">Toplam Kredi</div>
+                    <div class="fw-bold fs-3 text-info">@Model.Sum(d => d.Kredi)</div>
+                </div>
+            </div>
+        </div>
+
+        <h6 class="text-muted fw-semibold mb-3">
+            <i class="bi bi-book-fill me-2 text-primary"></i>Size Atanan Dersler
+            <span class="badge bg-primary ms-2">@Model.Count</span>
+        </h6>
+
+        @for (int i = 0; i < Model.Count; i++)
+        {
+            var ders = Model[i];
+            <div class="card mb-3 shadow-sm" id="dersKart_@ders.Id">
+                <div class="card-header d-flex align-items-center justify-content-between">
+                    <div class="d-flex align-items-center gap-2 flex-wrap">
+                        <span class="badge bg-primary" style="min-width:28px;">@(i+1)</span>
+                        <div>
+                            <span class="fw-bold">@ders.DersAdi</span>
+                            <span class="ogrenci-no ms-2">@ders.DersKodu</span>
+                        </div>
+                        <span class="badge bg-info text-white">@ders.Kredi Kredi</span>
+                        <span class="badge bg-secondary rounded-pill">@ders.OgrenciDersler.Count öğrenci</span>
+                        <!-- Öğretmen olduğunuzu gösteren rozet -->
+                        <span class="badge bg-warning text-dark">
+                            <i class="bi bi-person-video3 me-1"></i>Bu dersin öğretmenisiniz
+                        </span>
+                    </div>
+                    <div class="d-flex gap-1 flex-wrap">
+                        <!-- Ders detayına git (içerik ekle, devamsızlık gir) -->
+                        <a asp-controller="Ders" asp-action="Detay" asp-route-id="@ders.Id"
+                           class="btn btn-sm btn-primary" title="Ders Detayı ve İçerik Yönetimi" id="btnDersDetay_@ders.Id">
+                            <i class="bi bi-book-fill me-1"></i>Derse Git
+                        </a>
+                    </div>
+                </div>
+
+                <div class="card-body p-0">
+                    @if (ders.OgrenciDersler.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-sm mb-0" id="tblPanelDersOgrenci_@ders.Id">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th class="ps-3">Öğrenci</th>
+                                        <th>Öğrenci No</th>
+                                        <th>Atama Tarihi</th>
+                                        <th class="text-end pe-3">İşlemler</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var od in ders.OgrenciDersler)
+                                    {
+                                        <tr>
+                                            <td class="ps-3">
+                                                <div class="d-flex align-items-center gap-2">
+                                                    <div class="avatar-sm" style="width:30px;height:30px;font-size:0.65rem;">
+                                                        @od.Ogrenci?.Ad.Substring(0, 1)@od.Ogrenci?.Soyad.Substring(0, 1)
+                                                    </div>
+                                                    <span class="fw-semibold">@od.Ogrenci?.Ad @od.Ogrenci?.Soyad</span>
+                                                </div>
+                                            </td>
+                                            <td><span class="ogrenci-no">@od.Ogrenci?.OgrenciNo</span></td>
+                                            <td class="text-muted small">@od.AtamaTarihi.ToString("dd.MM.yyyy")</td>
+                                            <td class="text-end pe-3">
+                                                <div class="d-flex gap-1 justify-content-end">
+                                                    <a asp-controller="Not" asp-action="Ekle"
+                                                       asp-route-ogrenciId="@od.OgrenciId" asp-route-dersId="@ders.Id"
+                                                       class="btn btn-sm btn-success" title="Not Ekle"
+                                                       id="btnNotEkle_@(od.OgrenciId)_@ders.Id">
+                                                        <i class="bi bi-journal-plus me-1"></i>Not
+                                                    </a>
+                                                    <a asp-controller="Devamsizlik" asp-action="Ekle"
+                                                       asp-route-ogrenciId="@od.OgrenciId" asp-route-dersId="@ders.Id"
+                                                       class="btn btn-sm btn-danger" title="Devamsızlık Ekle"
+                                                       id="btnDevEkle_@(od.OgrenciId)_@ders.Id">
+                                                        <i class="bi bi-calendar-x me-1"></i>Devamsızlık
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="p-3 text-center text-muted">
+                            <i class="bi bi-people me-1"></i>Bu derse henüz öğrenci atanmamış.
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+    }
+</div>

@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\build\OgrenciDersYonetim.Web.props" />
+</Project>

@@ -1,0 +1,86 @@
+@model OgrenciDersYonetim.Web.Models.ViewModels.LoginViewModel
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Giriş Yap";
+}
+
+<div class="auth-wrapper">
+    <div class="auth-card fade-in">
+        <div class="auth-logo">
+            <i class="bi bi-mortarboard-fill"></i>
+        </div>
+        <div class="text-center mb-4">
+            <h2>Tekrar Hoşgeldiniz</h2>
+            <p class="text-muted">Hesabınıza giriş yapın</p>
+        </div>
+
+        <form asp-action="Login" method="post" id="loginForm">
+            @Html.AntiForgeryToken()
+
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert" style="display:none;"></div>
+            @if (ViewContext.ModelState.Values.Any(v => v.Errors.Count > 0))
+            {
+                <div class="alert alert-danger mb-3">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                    <span asp-validation-summary="ModelOnly"></span>
+                </div>
+            }
+
+            <div class="mb-3">
+                <label asp-for="KullaniciAdi" class="form-label">
+                    <i class="bi bi-person me-1"></i>@Html.DisplayNameFor(m => m.KullaniciAdi)
+                </label>
+                <input asp-for="KullaniciAdi" class="form-control" placeholder="Kullanıcı adınızı giriniz" id="txtKullaniciAdi" autocomplete="username" />
+                <span asp-validation-for="KullaniciAdi" class="text-danger small"></span>
+            </div>
+
+            <div class="mb-4">
+                <label asp-for="Sifre" class="form-label">
+                    <i class="bi bi-lock me-1"></i>@Html.DisplayNameFor(m => m.Sifre)
+                </label>
+                <div class="input-group">
+                    <input asp-for="Sifre" class="form-control" type="password" placeholder="Şifrenizi giriniz" id="txtSifre" autocomplete="current-password" />
+                    <button type="button" class="btn btn-outline-secondary" id="toggleSifre" tabindex="-1">
+                        <i class="bi bi-eye" id="sifreIcon"></i>
+                    </button>
+                </div>
+                <span asp-validation-for="Sifre" class="text-danger small"></span>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100 py-2 mb-3" id="btnGiris">
+                <i class="bi bi-box-arrow-in-right me-2"></i>Giriş Yap
+            </button>
+
+            <div class="text-center mt-2">
+                <small class="text-muted">
+                    <i class="bi bi-shield-lock me-1"></i>Hesabınız için yöneticinizle iletişime geçin.
+                </small>
+            </div>
+        </form>
+
+        <div class="mt-4 p-3 rounded-3" style="background:#f8fafc; border:1px solid #e2e8f0;">
+            <small class="text-muted d-block fw-semibold mb-2"><i class="bi bi-info-circle me-1"></i>Demo Hesaplar</small>
+            <div class="d-flex flex-column gap-1">
+                <small class="text-muted"><span class="badge bg-warning text-dark">Admin</span> admin / Admin123!</small>
+                <small class="text-muted"><span class="badge bg-success">Öğretmen</span> ogretmen1 / Admin123!</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.getElementById('toggleSifre').addEventListener('click', function() {
+            const input = document.getElementById('txtSifre');
+            const icon = document.getElementById('sifreIcon');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.className = 'bi bi-eye-slash';
+            } else {
+                input.type = 'password';
+                icon.className = 'bi bi-eye';
+            }
+        });
+    </script>
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

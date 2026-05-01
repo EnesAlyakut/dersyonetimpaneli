@@ -1,0 +1,100 @@
+@model List<OgrenciDersYonetim.Core.Entities.Devamsizlik>
+@{
+    ViewData["Title"] = "Devamsızlık Kayıtları";
+    var ogrenci = ViewBag.Ogrenci as OgrenciDersYonetim.Core.Entities.Ogrenci;
+    var dersler = ViewBag.Dersler as List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem> ?? new();
+    var toplamDevamsizlik = (int)(ViewBag.ToplamDevamsizlik ?? 0);
+    var rol = ViewBag.Rol as string;
+}
+
+<div class="page-header">
+    <div class="container">
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+            <div class="d-flex align-items-center gap-3">
+                <a asp-controller="Ogrenci" asp-action="Detay" asp-route-id="@ogrenci?.Id" class="btn btn-sm btn-outline-secondary">
+                    <i class="bi bi-arrow-left me-1"></i>Geri
+                </a>
+                <div>
+                    <h1 class="page-title"><i class="bi bi-calendar-x me-2 text-danger"></i>@ogrenci?.Ad @ogrenci?.Soyad - Devamsızlık</h1>
+                    <p class="page-subtitle">Öğrenci No: @ogrenci?.OgrenciNo | Toplam: @toplamDevamsizlik gün</p>
+                </div>
+            </div>
+            <a asp-action="Ekle" asp-route-ogrenciId="@ogrenci?.Id" class="btn btn-danger" id="btnDevamsizlikEkle">
+                <i class="bi bi-plus-circle me-2"></i>Devamsızlık Ekle
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    @if (toplamDevamsizlik > 0)
+    {
+        <!-- Ders bazlı özet -->
+        <div class="row g-3 mb-4">
+            @foreach (var dersGrubu in Model.GroupBy(d => d.Ders))
+            {
+                var sayi = dersGrubu.Count();
+                var renkClass = sayi >= 7 ? "danger" : sayi >= 4 ? "warning" : "success";
+                <div class="col-md-3">
+                    <div class="card border-0 shadow-sm text-center p-3">
+                        <div class="fw-semibold small mb-1">@dersGrubu.Key.DersAdi</div>
+                        <div class="fs-3 fw-bold text-@renkClass">@sayi</div>
+                        <small class="text-muted">gün devamsızlık</small>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="table-wrapper">
+            <table class="table" id="tblDevamsizliklar">
+                <thead>
+                    <tr>
+                        <th>Ders</th>
+                        <th>Tarih</th>
+                        <th>Açıklama</th>
+                        <th class="text-end">İşlem</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var dev in Model)
+                    {
+                        <tr>
+                            <td>
+                                <div class="fw-semibold">@dev.Ders.DersAdi</div>
+                                <small class="text-muted">@dev.Ders.DersKodu</small>
+                            </td>
+                            <td>
+                                <span class="badge bg-danger">
+                                    <i class="bi bi-calendar-x me-1"></i>@dev.Tarih.ToString("dd.MM.yyyy")
+                                </span>
+                            </td>
+                            <td class="text-muted small">@(dev.Aciklama ?? "-")</td>
+                            <td class="text-end">
+                                <form asp-action="Sil" method="post" style="display:inline;"
+                                      onsubmit="return confirm('Bu devamsızlık kaydını silmek istediğinizden emin misiniz?')">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="id" value="@dev.Id" />
+                                    <input type="hidden" name="ogrenciId" value="@ogrenci?.Id" />
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" id="btnDevamsizlikSil_@dev.Id">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <div class="empty-state">
+            <i class="bi bi-calendar-check"></i>
+            <h5>Devamsızlık Kaydı Yok</h5>
+            <p class="small">Bu öğrenciye ait devamsızlık kaydı bulunmamaktadır.</p>
+            <a asp-action="Ekle" asp-route-ogrenciId="@ogrenci?.Id" class="btn btn-danger mt-2">
+                <i class="bi bi-plus-circle me-2"></i>Devamsızlık Ekle
+            </a>
+        </div>
+    }
+</div>

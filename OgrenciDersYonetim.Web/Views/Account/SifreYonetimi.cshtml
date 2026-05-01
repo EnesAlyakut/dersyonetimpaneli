@@ -1,0 +1,270 @@
+@model OgrenciDersYonetim.Web.Models.ViewModels.SifreAyarlaViewModel
+@using OgrenciDersYonetim.Core.Entities
+@{
+    ViewData["Title"] = "Şifre Yönetimi";
+    var kullanicilar = ViewBag.Kullanicilar as List<Kullanici> ?? new List<Kullanici>();
+    var ogretmenler = kullanicilar.Where(k => k.Rol == "Ogretmen").ToList();
+    var ogrenciler = kullanicilar.Where(k => k.Rol == "Ogrenci").ToList();
+}
+
+<div class="page-header">
+    <div class="container">
+        <div class="d-flex align-items-center gap-3">
+            <div>
+                <h1 class="page-title"><i class="bi bi-key-fill me-2 text-warning"></i>Şifre Yönetimi</h1>
+                <p class="page-subtitle">Öğretmen ve öğrenci kullanıcı şifrelerini buradan belirleyebilirsiniz.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row g-4">
+
+        <!-- Şifre Belirleme Formu -->
+        <div class="col-lg-5">
+            <div class="card shadow-sm">
+                <div class="card-header d-flex align-items-center gap-2">
+                    <i class="bi bi-shield-lock-fill text-primary"></i>
+                    <span class="fw-semibold">Şifre Ata / Değiştir</span>
+                </div>
+                <div class="card-body p-4">
+                    <form asp-action="SifreYonetimi" method="post" id="frmSifreAyarla">
+                        @Html.AntiForgeryToken()
+
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert" style="display:none;"></div>
+                        @if (ViewContext.ModelState.Values.Any(v => v.Errors.Count > 0))
+                        {
+                            <div class="alert alert-danger mb-3">
+                                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                                <span asp-validation-summary="All"></span>
+                            </div>
+                        }
+
+                        <div class="mb-3">
+                            <label asp-for="KullaniciId" class="form-label fw-semibold">
+                                <i class="bi bi-person me-1"></i>Kullanıcı Seçin
+                            </label>
+                            <select asp-for="KullaniciId" class="form-select" id="selectKullanici">
+                                <option value="">-- Kullanıcı Seçin --</option>
+                                @if (ogretmenler.Any())
+                                {
+                                    <optgroup label="👩‍🏫 Öğretmenler">
+                                        @foreach (var k in ogretmenler)
+                                        {
+                                            <option value="@k.Id">@k.Ad @k.Soyad (@k.KullaniciAdi)</option>
+                                        }
+                                    </optgroup>
+                                }
+                                @if (ogrenciler.Any())
+                                {
+                                    <optgroup label="👨‍🎓 Öğrenciler">
+                                        @foreach (var k in ogrenciler)
+                                        {
+                                            <option value="@k.Id">@k.Ad @k.Soyad (@k.KullaniciAdi)</option>
+                                        }
+                                    </optgroup>
+                                }
+                            </select>
+                            <span asp-validation-for="KullaniciId" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="YeniSifre" class="form-label fw-semibold">
+                                <i class="bi bi-lock me-1"></i>Yeni Şifre
+                            </label>
+                            <div class="input-group">
+                                <input asp-for="YeniSifre" class="form-control" type="password"
+                                       placeholder="En az 6 karakter" id="txtYeniSifre" />
+                                <button type="button" class="btn btn-outline-secondary" id="toggleYeniSifre" tabindex="-1">
+                                    <i class="bi bi-eye" id="yeniSifreIcon"></i>
+                                </button>
+                            </div>
+                            <span asp-validation-for="YeniSifre" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="YeniSifreTekrar" class="form-label fw-semibold">
+                                <i class="bi bi-lock-fill me-1"></i>Şifre Tekrar
+                            </label>
+                            <div class="input-group">
+                                <input asp-for="YeniSifreTekrar" class="form-control" type="password"
+                                       placeholder="Şifreyi tekrar girin" id="txtYeniSifreTekrar" />
+                                <button type="button" class="btn btn-outline-secondary" id="toggleYeniSifreTekrar" tabindex="-1">
+                                    <i class="bi bi-eye" id="yeniSifreTekrarIcon"></i>
+                                </button>
+                            </div>
+                            <span asp-validation-for="YeniSifreTekrar" class="text-danger small"></span>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100 py-2" id="btnSifreKaydet">
+                            <i class="bi bi-check-circle me-2"></i>Şifreyi Güncelle
+                        </button>
+                    </form>
+                </div>
+                <div class="card-footer bg-transparent">
+                    <small class="text-muted">
+                        <i class="bi bi-info-circle me-1 text-primary"></i>
+                        Şifre değişikliği anında geçerli olur. Kullanıcı bir sonraki girişinde yeni şifreyi kullanmalıdır.
+                    </small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Kullanıcı Listesi -->
+        <div class="col-lg-7">
+            <!-- Öğretmenler -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header d-flex align-items-center justify-content-between">
+                    <span><i class="bi bi-person-video3 me-2 text-warning"></i><strong>Öğretmenler</strong></span>
+                    <span class="badge bg-warning text-dark">@ogretmenler.Count</span>
+                </div>
+                <div class="card-body p-0">
+                    @if (ogretmenler.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table mb-0" id="tblOgretmenler">
+                                <thead>
+                                    <tr>
+                                        <th>Ad Soyad</th>
+                                        <th>Kullanıcı Adı</th>
+                                        <th>E-posta</th>
+                                        <th>İşlem</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var k in ogretmenler)
+                                    {
+                                        <tr>
+                                            <td class="fw-semibold">
+                                                <div class="d-flex align-items-center gap-2">
+                                                    <div class="avatar-sm" style="width:32px;height:32px;font-size:.75rem;background:linear-gradient(135deg,#f59e0b,#d97706);">
+                                                        @k.Ad.Substring(0, 1)@k.Soyad.Substring(0, 1)
+                                                    </div>
+                                                    @k.Ad @k.Soyad
+                                                </div>
+                                            </td>
+                                            <td><span class="ogrenci-no">@k.KullaniciAdi</span></td>
+                                            <td class="text-muted small">@(k.Email ?? "-")</td>
+                                            <td>
+                                                <button type="button" class="btn btn-sm btn-outline-primary btnSifreSecQuick"
+                                                        data-kullanici-id="@k.Id"
+                                                        data-kullanici-ad="@k.Ad @k.Soyad"
+                                                        id="btnOgretmenSifre_@k.Id"
+                                                        title="Şifre Belirle">
+                                                    <i class="bi bi-key me-1"></i>Şifre Belirle
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="empty-state py-3">
+                            <i class="bi bi-person-x"></i>
+                            <h6>Henüz öğretmen hesabı yok</h6>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Öğrenciler -->
+            <div class="card shadow-sm">
+                <div class="card-header d-flex align-items-center justify-content-between">
+                    <span><i class="bi bi-people-fill me-2 text-primary"></i><strong>Öğrenciler</strong></span>
+                    <span class="badge bg-primary">@ogrenciler.Count</span>
+                </div>
+                <div class="card-body p-0">
+                    @if (ogrenciler.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table mb-0" id="tblOgrenciler">
+                                <thead>
+                                    <tr>
+                                        <th>Ad Soyad</th>
+                                        <th>Kullanıcı Adı</th>
+                                        <th>E-posta</th>
+                                        <th>İşlem</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var k in ogrenciler)
+                                    {
+                                        <tr>
+                                            <td class="fw-semibold">
+                                                <div class="d-flex align-items-center gap-2">
+                                                    <div class="avatar-sm" style="width:32px;height:32px;font-size:.75rem;">
+                                                        @k.Ad.Substring(0, 1)@k.Soyad.Substring(0, 1)
+                                                    </div>
+                                                    @k.Ad @k.Soyad
+                                                </div>
+                                            </td>
+                                            <td><span class="ogrenci-no">@k.KullaniciAdi</span></td>
+                                            <td class="text-muted small">@(k.Email ?? "-")</td>
+                                            <td>
+                                                <button type="button" class="btn btn-sm btn-outline-primary btnSifreSecQuick"
+                                                        data-kullanici-id="@k.Id"
+                                                        data-kullanici-ad="@k.Ad @k.Soyad"
+                                                        id="btnOgrenciSifre_@k.Id"
+                                                        title="Şifre Belirle">
+                                                    <i class="bi bi-key me-1"></i>Şifre Belirle
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="empty-state py-3">
+                            <i class="bi bi-person-x"></i>
+                            <h6>Henüz öğrenci hesabı yok</h6>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Şifre göster/gizle
+        function toggleSifre(inputId, iconId) {
+            const input = document.getElementById(inputId);
+            const icon = document.getElementById(iconId);
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.className = 'bi bi-eye-slash';
+            } else {
+                input.type = 'password';
+                icon.className = 'bi bi-eye';
+            }
+        }
+        document.getElementById('toggleYeniSifre').addEventListener('click', () => toggleSifre('txtYeniSifre', 'yeniSifreIcon'));
+        document.getElementById('toggleYeniSifreTekrar').addEventListener('click', () => toggleSifre('txtYeniSifreTekrar', 'yeniSifreTekrarIcon'));
+
+        // Tablodan butona tıklayınca formdaki kullanıcıyı seç ve sayfayı formu gösterecek şekilde kaydır
+        document.querySelectorAll('.btnSifreSecQuick').forEach(btn => {
+            btn.addEventListener('click', function () {
+                const kullaniciId = this.getAttribute('data-kullanici-id');
+                const kullaniciAd = this.getAttribute('data-kullanici-ad');
+                const selectEl = document.getElementById('selectKullanici');
+                selectEl.value = kullaniciId;
+                // Highlight seçili satır
+                document.querySelectorAll('.btnSifreSecQuick').forEach(b => b.classList.remove('btn-primary'));
+                this.classList.add('btn-primary');
+                this.classList.remove('btn-outline-primary');
+                // Forma kaydır
+                document.getElementById('frmSifreAyarla').scrollIntoView({ behavior: 'smooth', block: 'start' });
+                document.getElementById('txtYeniSifre').focus();
+            });
+        });
+    </script>
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

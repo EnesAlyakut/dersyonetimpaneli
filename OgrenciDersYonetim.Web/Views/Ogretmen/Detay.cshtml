@@ -1,0 +1,297 @@
+@model OgrenciDersYonetim.Core.Entities.Ogretmen
+@using OgrenciDersYonetim.Core.Entities
+@{
+    ViewData["Title"] = "Öğretmen Detay";
+    var atanabilecekDersler = ViewBag.AtanabilecekDersler as List<Ders> ?? new List<Ders>();
+    var dersOgrencileri = ViewBag.DersOgrencileri as Dictionary<int, List<OgrenciDers>> ?? new Dictionary<int, List<OgrenciDers>>();
+    var dersDevamsizliklari = ViewBag.DersDevamsizliklari as Dictionary<int, List<Devamsizlik>> ?? new Dictionary<int, List<Devamsizlik>>();
+}
+
+<div class="page-header">
+    <div class="container">
+        <div class="d-flex align-items-center gap-3">
+            <a asp-action="Index" class="btn btn-sm btn-outline-secondary">
+                <i class="bi bi-arrow-left me-1"></i>Geri
+            </a>
+            <div>
+                <h1 class="page-title"><i class="bi bi-person-video3 me-2 text-warning"></i>@Model.Ad @Model.Soyad</h1>
+                <p class="page-subtitle">Öğretmen detay bilgileri ve ders yönetimi</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row g-4">
+
+        <!-- Sol: Öğretmen Bilgileri -->
+        <div class="col-lg-3">
+            <div class="card mb-3">
+                <div class="card-body text-center p-4">
+                    <div class="avatar-sm mx-auto mb-3" style="width:72px;height:72px;font-size:1.6rem;background:linear-gradient(135deg,#f59e0b,#d97706);">
+                        @Model.Ad.Substring(0, 1)@Model.Soyad.Substring(0, 1)
+                    </div>
+                    <h5 class="fw-bold">@Model.Ad @Model.Soyad</h5>
+                    @if (!string.IsNullOrEmpty(Model.Brans))
+                    {
+                        <span class="badge bg-warning text-dark">@Model.Brans</span>
+                    }
+                </div>
+                <div class="card-body border-top pt-3">
+                    <div class="detail-item">
+                        <div class="detail-icon"><i class="bi bi-envelope"></i></div>
+                        <div>
+                            <div class="detail-label">E-posta</div>
+                            <div class="detail-value small">@(Model.Email ?? "-")</div>
+                        </div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-icon"><i class="bi bi-telephone"></i></div>
+                        <div>
+                            <div class="detail-label">Telefon</div>
+                            <div class="detail-value small">@(Model.Telefon ?? "-")</div>
+                        </div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-icon"><i class="bi bi-book"></i></div>
+                        <div>
+                            <div class="detail-label">Toplam Ders</div>
+                            <div class="detail-value">@Model.OgretmenDersler.Count ders</div>
+                        </div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-icon"><i class="bi bi-person-check"></i></div>
+                        <div>
+                            <div class="detail-label">Kullanıcı Hesabı</div>
+                            <div class="detail-value">
+                                @if (Model.Kullanici != null)
+                                {
+                                    <span class="badge bg-success">@Model.Kullanici.KullaniciAdi</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">Hesap Yok</span>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer bg-transparent d-flex gap-2 flex-wrap">
+                    <a asp-action="Guncelle" asp-route-id="@Model.Id" class="btn btn-warning btn-sm flex-fill" id="btnOgretmenDetayGuncelle">
+                        <i class="bi bi-pencil me-1"></i>Düzenle
+                    </a>
+                    <a asp-controller="Account" asp-action="SifreYonetimi"
+                       class="btn btn-info btn-sm flex-fill text-white" id="btnOgretmenSifre_@Model.Id">
+                        <i class="bi bi-key me-1"></i>Şifre
+                    </a>
+                    <form asp-action="Sil" method="post" onsubmit="return confirm('@Model.TamAd öğretmenini silmek istediğinizden emin misiniz?')">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="id" value="@Model.Id" />
+                        <button type="submit" class="btn btn-danger btn-sm" id="btnOgretmenDetaySil">
+                            <i class="bi bi-trash me-1"></i>Sil
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Ders Atama Formu -->
+            <div class="card">
+                <div class="card-header">
+                    <i class="bi bi-plus-circle me-2 text-success"></i><strong>Ders Ata</strong>
+                </div>
+                <div class="card-body">
+                    @if (atanabilecekDersler.Any())
+                    {
+                        <form asp-action="DersAta" method="post" id="frmDersAta">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="ogretmenId" value="@Model.Id" />
+                            <div class="mb-2">
+                                <select name="dersId" class="form-select form-select-sm" id="selectDersAta">
+                                    <option value="">-- Ders Seçin --</option>
+                                    @foreach (var ders in atanabilecekDersler)
+                                    {
+                                        <option value="@ders.Id">@ders.DersAdi (@ders.DersKodu)</option>
+                                    }
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-success btn-sm w-100" id="btnDersAtaKaydet">
+                                <i class="bi bi-plus-lg me-1"></i>Ata
+                            </button>
+                        </form>
+                    }
+                    else
+                    {
+                        <p class="text-muted small mb-0"><i class="bi bi-check-all me-1 text-success"></i>Tüm dersler atanmış.</p>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Sağ: Dersler ve Öğrenci Listeleri -->
+        <div class="col-lg-9">
+            @if (!Model.OgretmenDersler.Any())
+            {
+                <div class="card">
+                    <div class="card-body">
+                        <div class="empty-state py-4">
+                            <i class="bi bi-journal-x"></i>
+                            <h5>Henüz Ders Atanmamış</h5>
+                            <p class="small">Sol panelden öğretmene ders atayın.</p>
+                        </div>
+                    </div>
+                </div>
+            }
+            else
+            {
+                @for (int i = 0; i < Model.OgretmenDersler.ToList().Count; i++)
+                {
+                    var od = Model.OgretmenDersler.ToList()[i];
+                    var ogrenciler = dersOgrencileri.ContainsKey(od.DersId) ? dersOgrencileri[od.DersId] : new List<OgrenciDers>();
+                    var devamsizliklar = dersDevamsizliklari.ContainsKey(od.DersId) ? dersDevamsizliklari[od.DersId] : new List<Devamsizlik>();
+
+                    <div class="card mb-3" id="dersPanel_@od.DersId">
+                        <!-- Ders Başlığı -->
+                        <div class="card-header d-flex align-items-center justify-content-between">
+                            <div class="d-flex align-items-center gap-2 flex-wrap">
+                                <span class="badge bg-primary rounded-pill">@(i+1)</span>
+                                <strong>@od.Ders.DersAdi</strong>
+                                <span class="ogrenci-no">@od.Ders.DersKodu</span>
+                                <span class="badge bg-info text-white">@od.Ders.Kredi Kredi</span>
+                                <span class="badge bg-secondary">@ogrenciler.Count öğrenci</span>
+                            </div>
+                            <div class="d-flex gap-1">
+                                <!-- Ders detayına git -->
+                                <a asp-controller="Ders" asp-action="Detay" asp-route-id="@od.DersId"
+                                   class="btn btn-sm btn-outline-primary" title="Ders Detayı"
+                                   id="btnDersDetayGit_@od.DersId">
+                                    <i class="bi bi-book-fill me-1"></i>Ders
+                                </a>
+                                <!-- Devamsızlık ekle (direkt forma gider) -->
+                                <a asp-controller="Devamsizlik" asp-action="Ekle" asp-route-dersId="@od.DersId"
+                                   class="btn btn-sm btn-outline-danger" title="Devamsızlık Ekle"
+                                   id="btnDersDevamsizlikEkle_@od.DersId">
+                                    <i class="bi bi-calendar-x me-1"></i>Devamsızlık
+                                </a>
+                                <!-- Ders atmasını kaldır -->
+                                <form asp-action="DersAtamaKaldir" method="post" style="display:inline;"
+                                      onsubmit="return confirm('@od.Ders.DersAdi dersini bu öğretmenden kaldırmak istediğinizden emin misiniz?')">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="ogretmenId" value="@Model.Id" />
+                                    <input type="hidden" name="dersId" value="@od.DersId" />
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Dersi Kaldır"
+                                            id="btnDersAtamaKaldir_@od.DersId">
+                                        <i class="bi bi-x-lg"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+
+                        <!-- Öğrenci Listesi -->
+                        <div class="card-body p-0">
+                            @if (ogrenciler.Any())
+                            {
+                                <div class="table-responsive">
+                                    <table class="table table-sm mb-0" id="tblDersOgrenci_@od.DersId">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th class="ps-3">Öğrenci</th>
+                                                <th>Öğrenci No</th>
+                                                <th class="text-center">Devamsızlık</th>
+                                                <th class="text-end pe-3">İşlemler</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var ogrenciDers in ogrenciler)
+                                            {
+                                                var ogrenciDevamsizlik = devamsizliklar.Where(d => d.OgrenciId == ogrenciDers.OgrenciId).ToList();
+                                                var devSayisi = ogrenciDevamsizlik.Count;
+                                                var devClass = devSayisi >= 7 ? "danger" : devSayisi >= 4 ? "warning" : "success";
+                                                <tr>
+                                                    <td class="ps-3">
+                                                        <div class="d-flex align-items-center gap-2">
+                                                            <div class="avatar-sm" style="width:32px;height:32px;font-size:.7rem;">
+                                                                @ogrenciDers.Ogrenci?.Ad.Substring(0, 1)@ogrenciDers.Ogrenci?.Soyad.Substring(0, 1)
+                                                            </div>
+                                                            <div>
+                                                                <div class="fw-semibold small">@ogrenciDers.Ogrenci?.Ad @ogrenciDers.Ogrenci?.Soyad</div>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td><span class="ogrenci-no">@ogrenciDers.Ogrenci?.OgrenciNo</span></td>
+                                                    <td class="text-center">
+                                                        <span class="badge bg-@devClass"
+                                                              title="@string.Join(", ", ogrenciDevamsizlik.Select(d => d.Tarih.ToString("dd.MM.yyyy")))">
+                                                            @devSayisi gün
+                                                        </span>
+                                                    </td>
+                                                    <td class="text-end pe-3">
+                                                        <div class="d-flex gap-1 justify-content-end">
+                                                            <!-- Öğrenci Profili -->
+                                                            <a asp-controller="Ogrenci" asp-action="Detay"
+                                                               asp-route-id="@ogrenciDers.OgrenciId"
+                                                               class="btn btn-sm btn-outline-primary" title="Öğrenci Profili"
+                                                               id="btnOgrenci_@(ogrenciDers.OgrenciId)_@od.DersId">
+                                                                <i class="bi bi-person"></i>
+                                                            </a>
+                                                            <!-- Devamsızlık Ekle -->
+                                                            <a asp-controller="Devamsizlik" asp-action="Ekle"
+                                                               asp-route-ogrenciId="@ogrenciDers.OgrenciId"
+                                                               asp-route-dersId="@od.DersId"
+                                                               class="btn btn-sm btn-outline-danger" title="Devamsızlık Ekle"
+                                                               id="btnDevamsizlik_@(ogrenciDers.OgrenciId)_@od.DersId">
+                                                                <i class="bi bi-calendar-x"></i>
+                                                            </a>
+                                                            <!-- Devamsızlıkları Yönet -->
+                                                            <a asp-controller="Devamsizlik" asp-action="OgrenciDevamsizlik"
+                                                               asp-route-ogrenciId="@ogrenciDers.OgrenciId"
+                                                               class="btn btn-sm btn-outline-warning" title="Devamsızlıkları Yönet"
+                                                               id="btnDevYonet_@(ogrenciDers.OgrenciId)_@od.DersId">
+                                                                <i class="bi bi-calendar2-x"></i>
+                                                            </a>
+                                                            <!-- Not Ekle -->
+                                                            <a asp-controller="Not" asp-action="Ekle"
+                                                               asp-route-ogrenciId="@ogrenciDers.OgrenciId"
+                                                               asp-route-dersId="@od.DersId"
+                                                               class="btn btn-sm btn-outline-success" title="Not Ekle"
+                                                               id="btnNot_@(ogrenciDers.OgrenciId)_@od.DersId">
+                                                                <i class="bi bi-journal-plus"></i>
+                                                            </a>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <!-- Ders Özeti -->
+                                <div class="p-2 px-3 d-flex gap-3 border-top" style="background:#f8fafc; font-size:.8rem;">
+                                    <span class="text-muted">
+                                        <i class="bi bi-people-fill me-1"></i>@ogrenciler.Count öğrenci kayıtlı
+                                    </span>
+                                    <span class="text-muted">
+                                        <i class="bi bi-calendar-x me-1 text-danger"></i>
+                                        Toplam @devamsizliklar.Count devamsızlık kaydı
+                                    </span>
+                                    <a asp-controller="Ders" asp-action="Detay" asp-route-id="@od.DersId"
+                                       class="ms-auto text-primary text-decoration-none small">
+                                        Ders İçeriklerini Yönet <i class="bi bi-arrow-right ms-1"></i>
+                                    </a>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="p-3 text-center text-muted small">
+                                    <i class="bi bi-people me-1"></i>Bu derse henüz öğrenci atanmamış.
+                                    <a asp-controller="Atama" asp-action="Index" class="btn btn-sm btn-outline-primary ms-2"
+                                       id="btnAtamaGit_@od.DersId">
+                                        <i class="bi bi-person-plus me-1"></i>Öğrenci Ata
+                                    </a>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+</div>

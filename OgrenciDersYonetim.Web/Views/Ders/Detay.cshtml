@@ -1,0 +1,380 @@
+@model OgrenciDersYonetim.Core.Entities.Ders
+@using OgrenciDersYonetim.Core.Entities
+@{
+    ViewData["Title"] = "Ders Detay - " + Model.DersAdi;
+    var rol = ViewBag.Rol as string;
+    var icerikler = ViewBag.Icerikler as List<DersIcerik> ?? new List<DersIcerik>();
+    var devamsizliklar = ViewBag.Devamsizliklar as List<Devamsizlik> ?? new List<Devamsizlik>();
+    var ogrenciDevamsizliklari = ViewBag.OgrenciDevamsizliklari as List<Devamsizlik>;
+    bool canEdit = rol == "Admin" || rol == "Ogretmen";
+    bool isOgrenci = rol == "Ogrenci";
+
+    // Partial view için ViewData - indexer ile atama (duplicate key hatasını önler)
+    var panelData = new Microsoft.AspNetCore.Mvc.ViewFeatures.ViewDataDictionary(ViewData);
+    panelData["Icerikler"] = icerikler;
+    panelData["DersId"] = Model.Id;
+    panelData["CanEdit"] = canEdit;
+    panelData["Rol"] = rol;
+
+    var panelDataOgrenci = new Microsoft.AspNetCore.Mvc.ViewFeatures.ViewDataDictionary(ViewData);
+    panelDataOgrenci["Icerikler"] = icerikler;
+    panelDataOgrenci["DersId"] = Model.Id;
+    panelDataOgrenci["CanEdit"] = false;
+    panelDataOgrenci["Rol"] = rol;
+}
+
+<div class="page-header">
+    <div class="container">
+        <div class="d-flex align-items-center gap-3">
+            <a asp-action="Index" class="btn btn-sm btn-outline-secondary">
+                <i class="bi bi-arrow-left me-1"></i>Geri
+            </a>
+            <div>
+                <h1 class="page-title"><i class="bi bi-book-fill me-2 text-info"></i>@Model.DersAdi</h1>
+                <p class="page-subtitle">
+                    <span class="ogrenci-no me-2">@Model.DersKodu</span>
+                    <span class="badge bg-info text-white">@Model.Kredi Kredi</span>
+                    @if (Model.OgretmenDersler.Any())
+                    {
+                        foreach (var od in Model.OgretmenDersler)
+                        {
+                            <span class="badge bg-warning text-dark ms-1"><i class="bi bi-person-badge me-1"></i>@od.Ogretmen.Ad @od.Ogretmen.Soyad</span>
+                        }
+                    }
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    @if (rol == "Admin")
+    {
+        <!-- Admin: 3 sütun -->
+        <div class="row g-4">
+            <!-- Sol: Ders Bilgisi -->
+            <div class="col-lg-3">
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h6 class="fw-bold text-muted mb-3"><i class="bi bi-info-circle me-1"></i>Ders Bilgisi</h6>
+                        @if (!string.IsNullOrEmpty(Model.Aciklama))
+                        {
+                            <p class="small text-muted">@Model.Aciklama</p>
+                        }
+                        <div class="detail-item">
+                            <div class="detail-icon" style="background:#e0f2fe;color:#0891b2;"><i class="bi bi-calendar"></i></div>
+                            <div><div class="detail-label">Eklenme</div><div class="detail-value small">@Model.EklenmeTarihi.ToString("dd.MM.yyyy")</div></div>
+                        </div>
+                        <div class="detail-item mt-2">
+                            <div class="detail-icon" style="background:#e0f2fe;color:#0891b2;"><i class="bi bi-people"></i></div>
+                            <div><div class="detail-label">Kayıtlı</div><div class="detail-value">@Model.OgrenciDersler.Count öğrenci</div></div>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-transparent">
+                        <a asp-action="Guncelle" asp-route-id="@Model.Id" class="btn btn-warning btn-sm w-100" id="btnDersGuncelle">
+                            <i class="bi bi-pencil me-1"></i>Düzenle
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Orta: Öğrenci Listesi + Devamsızlık -->
+            <div class="col-lg-5">
+                <div class="card mb-3">
+                    <div class="card-header d-flex align-items-center justify-content-between">
+                        <span><i class="bi bi-people-fill me-2 text-primary"></i><strong>Kayıtlı Öğrenciler</strong></span>
+                        <span class="badge bg-primary">@Model.OgrenciDersler.Count</span>
+                    </div>
+                    <div class="card-body p-0">
+                        @if (Model.OgrenciDersler.Any())
+                        {
+                            <div class="table-responsive">
+                                <table class="table mb-0" id="tblDersOgrenciler">
+                                    <thead>
+                                        <tr>
+                                            <th>Öğrenci</th>
+                                            <th class="text-center">Devamsızlık</th>
+                                            <th>Devamsızlık Ekle</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var od in Model.OgrenciDersler)
+                                        {
+                                            var ogrenciDevam = devamsizliklar.Where(d => d.OgrenciId == od.OgrenciId).ToList();
+                                            <tr>
+                                                <td>
+                                                    <div class="d-flex align-items-center gap-2">
+                                                        <div class="avatar-sm" style="width:28px;height:28px;font-size:0.65rem;">
+                                                            @od.Ogrenci.Ad.Substring(0, 1)@od.Ogrenci.Soyad.Substring(0, 1)
+                                                        </div>
+                                                        <div>
+                                                            <div class="fw-semibold small">@od.Ogrenci.Ad @od.Ogrenci.Soyad</div>
+                                                            <div class="text-muted" style="font-size:.7rem;">@od.Ogrenci.OgrenciNo</div>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td class="text-center">
+                                                    @if (ogrenciDevam.Any())
+                                                    {
+                                                        <span class="badge bg-danger rounded-pill" title="Devamsızlık tarihleri">@ogrenciDevam.Count gün</span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="badge bg-success rounded-pill">Tam</span>
+                                                    }
+                                                </td>
+                                                <td>
+                                                    <button class="btn btn-sm btn-outline-danger btnDevamsizlikEkle"
+                                                            data-ogrenci-id="@od.OgrenciId"
+                                                            data-ogrenci-ad="@od.Ogrenci.Ad @od.Ogrenci.Soyad"
+                                                            data-bs-toggle="modal" data-bs-target="#modalDevamsizlik"
+                                                            id="btnDevamsizlik_@od.OgrenciId">
+                                                        <i class="bi bi-calendar-x"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="empty-state py-3">
+                                <i class="bi bi-people"></i>
+                                <h6>Henüz öğrenci yok</h6>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <!-- Devamsızlık Geçmişi -->
+                @if (devamsizliklar.Any())
+                {
+                    <div class="card">
+                        <div class="card-header d-flex align-items-center justify-content-between">
+                            <span><i class="bi bi-calendar-x me-2 text-danger"></i>Devamsızlık Kayıtları</span>
+                            <span class="badge bg-danger">@devamsizliklar.Count</span>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="table-responsive" style="max-height:250px;overflow-y:auto;">
+                                <table class="table table-sm mb-0">
+                                    <thead><tr><th>Öğrenci</th><th>Tarih</th><th>Açıklama</th></tr></thead>
+                                    <tbody>
+                                        @foreach (var d in devamsizliklar)
+                                        {
+                                            <tr>
+                                                <td class="small fw-semibold">@d.Ogrenci.Ad @d.Ogrenci.Soyad</td>
+                                                <td class="small text-muted">@d.Tarih.ToString("dd.MM.yyyy")</td>
+                                                <td class="small text-muted">@(d.Aciklama ?? "-")</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <!-- Sağ: İçerikler + Ekleme -->
+            <div class="col-lg-4">
+                @await Html.PartialAsync("_DersIcerikPanel", panelData)
+            </div>
+        </div>
+    }
+    else if (rol == "Ogretmen")
+    {
+        <!-- Öğretmen: 2 sütun -->
+        <div class="row g-4">
+            <!-- Sol: Öğrenci + Devamsızlık -->
+            <div class="col-lg-6">
+                <div class="card mb-3">
+                    <div class="card-header d-flex align-items-center justify-content-between">
+                        <span><i class="bi bi-people-fill me-2 text-primary"></i><strong>Öğrenciler ve Devamsızlık</strong></span>
+                        <span class="badge bg-primary">@Model.OgrenciDersler.Count</span>
+                    </div>
+                    <div class="card-body p-0">
+                        @if (Model.OgrenciDersler.Any())
+                        {
+                            <div class="table-responsive">
+                                <table class="table mb-0" id="tblOgretmenOgrenciler">
+                                    <thead>
+                                        <tr>
+                                            <th>Öğrenci</th>
+                                            <th class="text-center">Devamsızlık</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var od in Model.OgrenciDersler)
+                                        {
+                                            var ogrenciDevam = devamsizliklar.Where(d => d.OgrenciId == od.OgrenciId).ToList();
+                                            <tr>
+                                                <td>
+                                                    <div class="fw-semibold small">@od.Ogrenci.Ad @od.Ogrenci.Soyad</div>
+                                                    <div class="text-muted" style="font-size:.7rem;">@od.Ogrenci.OgrenciNo</div>
+                                                </td>
+                                                <td class="text-center">
+                                                    @if (ogrenciDevam.Any())
+                                                    {
+                                                        <span class="badge bg-danger" title="@string.Join(", ", ogrenciDevam.Select(d => d.Tarih.ToString("dd.MM")))">@ogrenciDevam.Count gün</span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="badge bg-success">Tam</span>
+                                                    }
+                                                </td>
+                                                <td>
+                                                    <button class="btn btn-sm btn-outline-danger btnDevamsizlikEkle"
+                                                            data-ogrenci-id="@od.OgrenciId"
+                                                            data-ogrenci-ad="@od.Ogrenci.Ad @od.Ogrenci.Soyad"
+                                                            data-bs-toggle="modal" data-bs-target="#modalDevamsizlik"
+                                                            id="btnOgretmenDevamsizlik_@od.OgrenciId">
+                                                        <i class="bi bi-calendar-x"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="empty-state py-3"><i class="bi bi-people"></i><h6>Bu derse kayıtlı öğrenci yok</h6></div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sağ: İçerikler -->
+            <div class="col-lg-6">
+                @await Html.PartialAsync("_DersIcerikPanel", panelData)
+            </div>
+        </div>
+    }
+    else if (rol == "Ogrenci")
+    {
+        <!-- Öğrenci görünümü -->
+        <div class="row g-4">
+            <!-- Sol: Ders Bilgisi + Devamsızlık -->
+            <div class="col-lg-4">
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h6 class="fw-bold mb-3"><i class="bi bi-info-circle me-1 text-info"></i>Ders Bilgisi</h6>
+                        @if (!string.IsNullOrEmpty(Model.Aciklama))
+                        {
+                            <p class="small text-muted">@Model.Aciklama</p>
+                        }
+                        @if (Model.OgretmenDersler.Any())
+                        {
+                            <div class="detail-item mt-2">
+                                <div class="detail-icon" style="background:#fef3c7;color:#d97706;"><i class="bi bi-person-badge"></i></div>
+                                <div>
+                                    <div class="detail-label">Öğretmen</div>
+                                    @foreach (var od in Model.OgretmenDersler)
+                                    {
+                                        <div class="detail-value">@od.Ogretmen.Ad @od.Ogretmen.Soyad</div>
+                                    }
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <!-- Kendi Devamsızlık Durumu -->
+                <div class="card">
+                    <div class="card-header">
+                        <i class="bi bi-calendar-check me-2 text-danger"></i><strong>Devamsızlık Durumum</strong>
+                    </div>
+                    <div class="card-body">
+                        @if (ogrenciDevamsizliklari != null && ogrenciDevamsizliklari.Any())
+                        {
+                            <div class="alert alert-warning py-2 mb-3">
+                                <i class="bi bi-exclamation-triangle me-1"></i>
+                                Bu derste <strong>@ogrenciDevamsizliklari.Count gün</strong> devamsızlığınız var.
+                            </div>
+                            <ul class="list-group list-group-flush">
+                                @foreach (var d in ogrenciDevamsizliklari)
+                                {
+                                    <li class="list-group-item py-1 px-0 d-flex justify-content-between align-items-center">
+                                        <span class="small"><i class="bi bi-calendar-x text-danger me-1"></i>@d.Tarih.ToString("dd MMMM yyyy", new System.Globalization.CultureInfo("tr-TR"))</span>
+                                        @if (!string.IsNullOrEmpty(d.Aciklama))
+                                        {
+                                            <span class="text-muted small">@d.Aciklama</span>
+                                        }
+                                    </li>
+                                }
+                            </ul>
+                        }
+                        else
+                        {
+                            <div class="text-center py-2">
+                                <i class="bi bi-check-circle-fill text-success fs-3"></i>
+                                <p class="small text-muted mt-2 mb-0">Bu derse ait devamsızlığınız yok. 🎉</p>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sağ: İçerikler (sadece görüntüleme) -->
+            <div class="col-lg-8">
+                @await Html.PartialAsync("_DersIcerikPanel", panelDataOgrenci)
+            </div>
+        </div>
+    }
+</div>
+
+<!-- Devamsızlık Modal (Admin ve Öğretmen için) -->
+@if (canEdit && Model.OgrenciDersler.Any())
+{
+    <div class="modal fade" id="modalDevamsizlik" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="bi bi-calendar-x me-2 text-danger"></i>Devamsızlık Ekle</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form asp-action="DevamsizlikGir" method="post" id="frmDevamsizlik">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="dersId" value="@Model.Id" />
+                    <input type="hidden" name="ogrenciId" id="modalOgrenciId" value="" />
+                    <div class="modal-body">
+                        <div class="alert alert-info py-2 mb-3">
+                            <i class="bi bi-person me-1"></i>
+                            Öğrenci: <strong id="modalOgrenciAd">-</strong>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold"><i class="bi bi-calendar me-1"></i>Devamsızlık Tarihi</label>
+                            <input type="date" name="tarih" class="form-control" value="@DateTime.Today.ToString("yyyy-MM-dd")" required />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold"><i class="bi bi-chat-text me-1"></i>Açıklama (İsteğe bağlı)</label>
+                            <input type="text" name="aciklama" class="form-control" placeholder="Ör: Mazeret bildirmedi" />
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                        <button type="submit" class="btn btn-danger" id="btnDevamsizlikKaydet">
+                            <i class="bi bi-calendar-x me-1"></i>Devamsız İşaretle
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+}
+
+@section Scripts {
+    <script>
+        // Devamsızlık modal: öğrenciyi seç
+        document.querySelectorAll('.btnDevamsizlikEkle').forEach(btn => {
+            btn.addEventListener('click', function () {
+                document.getElementById('modalOgrenciId').value = this.getAttribute('data-ogrenci-id');
+                document.getElementById('modalOgrenciAd').textContent = this.getAttribute('data-ogrenci-ad');
+            });
+        });
+    </script>
+}

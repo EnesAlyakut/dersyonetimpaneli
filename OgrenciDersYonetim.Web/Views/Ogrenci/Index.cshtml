@@ -1,0 +1,150 @@
+@model List<OgrenciDersYonetim.Core.Entities.Ogrenci>
+@{
+    ViewData["Title"] = "Ogrenci Listesi";
+    var rol = ViewBag.Rol as string;
+    var aramaMetni = ViewBag.AramaMetni as string;
+}
+
+<div class="page-header">
+    <div class="container">
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+            <div>
+                <h1 class="page-title"><i class="bi bi-people-fill me-2 text-primary"></i>Ogrenciler</h1>
+                <p class="page-subtitle">Sistemdeki tum ogrenciler listeleniyor</p>
+            </div>
+            @if (rol == "Admin")
+            {
+                <a asp-action="Ekle" class="btn btn-primary" id="btnOgrenciEkle">
+                    <i class="bi bi-person-plus-fill me-2"></i>Yeni Öğrenci
+                </a>
+            }
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <!-- Arama -->
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <form asp-action="Index" method="get" id="aramaForm">
+                <div class="search-wrapper">
+                    <i class="bi bi-search"></i>
+                    <input type="text" name="ara" value="@aramaMetni" class="form-control" placeholder="Ad, soyad veya ogrenci no ile ara..." id="txtArama" />
+                </div>
+            </form>
+        </div>
+        @if (!string.IsNullOrEmpty(aramaMetni))
+        {
+            <div class="col-md-6 d-flex align-items-center">
+                <span class="text-muted small me-2">"<strong>@aramaMetni</strong>" icin @Model.Count sonuc bulundu.</span>
+                <a asp-action="Index" class="btn btn-sm btn-outline-secondary">Temizle</a>
+            </div>
+        }
+    </div>
+
+    <div class="table-wrapper">
+        @if (Model.Any())
+        {
+            <table class="table" id="tblOgrenciler">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Ad Soyad</th>
+                        <th>Ogrenci No</th>
+                        <th>E-posta</th>
+                        <th>Ders Sayisi</th>
+                        <th>Kayit Tarihi</th>
+                        <th class="text-end">Islemler</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (int i = 0; i < Model.Count; i++)
+                    {
+                        var ogrenci = Model[i];
+                        <tr>
+                            <td class="text-muted">@(i + 1)</td>
+                            <td>
+                                <div class="d-flex align-items-center gap-2">
+                                    <div class="avatar-sm" style="width:32px;height:32px;font-size:0.7rem;">
+                                        @ogrenci.Ad.Substring(0, 1)@ogrenci.Soyad.Substring(0, 1)
+                                    </div>
+                                    <div>
+                                        <div class="fw-semibold">@ogrenci.Ad @ogrenci.Soyad</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td><span class="ogrenci-no">@ogrenci.OgrenciNo</span></td>
+                            <td class="text-muted">@(ogrenci.Email ?? "-")</td>
+                            <td>
+                                <span class="badge bg-primary rounded-pill">@ogrenci.OgrenciDersler.Count</span>
+                            </td>
+                            <td class="text-muted small">@ogrenci.KayitTarihi.ToString("dd.MM.yyyy")</td>
+                            <td class="text-end">
+                                <div class="d-flex gap-1 justify-content-end">
+                                    <a asp-action="Detay" asp-route-id="@ogrenci.Id" class="btn btn-sm btn-outline-primary" title="Detay">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    @if (rol == "Admin")
+                                    {
+                                        <a asp-action="Guncelle" asp-route-id="@ogrenci.Id" class="btn btn-sm btn-outline-warning" title="Guncelle">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <a asp-controller="Atama" asp-action="Index" asp-route-ogrenciId="@ogrenci.Id" class="btn btn-sm btn-outline-info" title="Ders Ata">
+                                            <i class="bi bi-link-45deg"></i>
+                                        </a>
+                                    }
+                                    @if (rol == "Admin")
+                                    {
+                                        <form asp-action="Sil" method="post" style="display:inline;" onsubmit="return confirm('@ogrenci.Ad @ogrenci.Soyad adli ogrenciyi silmek istediginizden emin misiniz?')">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="id" value="@ogrenci.Id" />
+                                            <button type="submit" class="btn btn-sm btn-outline-danger" title="Sil">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </form>
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <div class="empty-state">
+                <i class="bi bi-people"></i>
+                <h5>Ogrenci Bulunamadi</h5>
+                <p class="small">
+                    @if (!string.IsNullOrEmpty(aramaMetni))
+                    {
+                        <span>"@aramaMetni" icin sonuc yok.</span>
+                    }
+                    else
+                    {
+                        <span>Henuz ogrenci eklenmemis.</span>
+                    }
+                </p>
+                @if (rol == "Admin")
+                {
+                    <a asp-action="Ekle" class="btn btn-primary mt-2">
+                        <i class="bi bi-person-plus-fill me-2"></i>Öğrenci Ekle
+                    </a>
+                }
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Arama kutusunda her tuş basişinda formu gönder (debounce ile)
+        let aramaZamanlayici;
+        document.getElementById('txtArama').addEventListener('input', function() {
+            clearTimeout(aramaZamanlayici);
+            aramaZamanlayici = setTimeout(() => {
+                document.getElementById('aramaForm').submit();
+            }, 500);
+        });
+    </script>
+}

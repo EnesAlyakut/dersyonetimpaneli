@@ -1,0 +1,382 @@
+@model List<OgrenciDersYonetim.Core.Entities.Ders>
+@using OgrenciDersYonetim.Core.Entities
+@{
+    ViewData["Title"] = "Not Yönetimi";
+    var rol = ViewBag.Rol as string;
+    var dersOgrencileri = ViewBag.DersOgrencileri as Dictionary<int, List<OgrenciDers>> ?? new();
+    var dersNotlari = ViewBag.DersNotlari as Dictionary<int, List<Not>> ?? new();
+
+    string[] notTurleri = { "Vize", "Final" };
+}
+
+<div class="page-header">
+    <div class="container">
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+            <div>
+                <h1 class="page-title">
+                    <i class="bi bi-journal-check me-2 text-success"></i>Not Yönetimi
+                </h1>
+                <p class="page-subtitle">
+                    @if (rol == "Admin") { <span>Tüm dersler — ders bazlı not takibi</span> }
+                    else { <span>Atandığınız dersler — öğrenci not girişi</span> }
+                </p>
+            </div>
+            <div class="d-flex gap-2 align-items-center flex-wrap">
+                <span class="badge bg-success fs-6">@Model.Count ders</span>
+                <span class="badge bg-primary fs-6">@dersNotlari.Values.Sum(n => n.Count) toplam not</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+
+    @if (TempData["Basari"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show mb-3">
+            <i class="bi bi-check-circle-fill me-2"></i>@TempData["Basari"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+    @if (TempData["Hata"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show mb-3">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>@TempData["Hata"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (!Model.Any())
+    {
+        <div class="card">
+            <div class="card-body">
+                <div class="empty-state py-4">
+                    <i class="bi bi-journal-x"></i>
+                    <h5>Ders Bulunamadı</h5>
+                    <p class="small">
+                        @if (rol == "Ogretmen") { <span>Size henüz ders atanmamış.</span> }
+                        else { <span>Sistemde ders bulunmuyor.</span> }
+                    </p>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <!-- Ders Sekmeleri -->
+        <ul class="nav nav-tabs mb-0 border-bottom-0" id="notDersTabList" role="tablist" style="flex-wrap:wrap;">
+            @for (int i = 0; i < Model.Count; i++)
+            {
+                var ders = Model[i];
+                var ogrenciler = dersOgrencileri.ContainsKey(ders.Id) ? dersOgrencileri[ders.Id] : new();
+                var notlar = dersNotlari.ContainsKey(ders.Id) ? dersNotlari[ders.Id] : new();
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link @(i == 0 ? "active" : "")"
+                            id="notTab-@ders.Id"
+                            data-bs-toggle="tab"
+                            data-bs-target="#notDers-@ders.Id"
+                            type="button" role="tab">
+                        <i class="bi bi-book-fill me-1 text-success"></i>
+                        @ders.DersAdi
+                        <span class="badge bg-secondary ms-1">@ogrenciler.Count öğ</span>
+                        @if (notlar.Count > 0)
+                        {
+                            <span class="badge bg-success ms-1">@notlar.Count not</span>
+                        }
+                    </button>
+                </li>
+            }
+        </ul>
+
+        <!-- Ders Tab İçerikleri -->
+        <div class="tab-content" id="notDersTabContent">
+            @for (int i = 0; i < Model.Count; i++)
+            {
+                var ders = Model[i];
+                var ogrenciler = dersOgrencileri.ContainsKey(ders.Id) ? dersOgrencileri[ders.Id] : new List<OgrenciDers>();
+                var dersinNotlari = dersNotlari.ContainsKey(ders.Id) ? dersNotlari[ders.Id] : new List<Not>();
+
+                <div class="tab-pane fade @(i == 0 ? "show active" : "")"
+                     id="notDers-@ders.Id" role="tabpanel">
+                    <div class="card" style="border-top-left-radius:0; border-top:none;">
+
+                        <!-- Ders Başlık -->
+                        <div class="card-header d-flex align-items-center justify-content-between flex-wrap gap-2">
+                            <div class="d-flex align-items-center gap-2 flex-wrap">
+                                <strong>@ders.DersAdi</strong>
+                                <span class="ogrenci-no">@ders.DersKodu</span>
+                                <span class="badge bg-info text-white">@ders.Kredi Kredi</span>
+                                <span class="badge bg-secondary">@ogrenciler.Count öğrenci</span>
+                                <span class="badge bg-success">@dersinNotlari.Count not kaydı</span>
+                            </div>
+                        </div>
+
+                        <!-- Öğrenci - Not Listesi -->
+                        <div class="card-body p-0">
+                            @if (!ogrenciler.Any())
+                            {
+                                <div class="p-4 text-center text-muted">
+                                    <i class="bi bi-people me-1"></i>Bu derse kayıtlı öğrenci bulunmuyor.
+                                </div>
+                            }
+                            else
+                            {
+                                <!-- Accordion: Her öğrenci açılır/kapanır panel -->
+                                <div class="accordion accordion-flush" id="accordion_@ders.Id">
+                                    @foreach (var od in ogrenciler)
+                                    {
+                                        var ogrenciNotlar = dersinNotlari
+                                            .Where(n => n.OgrenciId == od.OgrenciId)
+                                            .OrderByDescending(n => n.Tarih)
+                                            .ToList();
+                                        var vize  = ogrenciNotlar.Where(n => n.NotTuru == "Vize").Select(n => n.NotDegeri).LastOrDefault();
+                                        var final = ogrenciNotlar.Where(n => n.NotTuru == "Final").Select(n => n.NotDegeri).LastOrDefault();
+                                        var vizeSayisi = ogrenciNotlar.Count(n => n.NotTuru == "Vize");
+                                        var finalSayisi = ogrenciNotlar.Count(n => n.NotTuru == "Final");
+                                        double? ortalama = null;
+                                        if (vizeSayisi > 0 && finalSayisi > 0)
+                                            ortalama = vize * 0.4 + final * 0.6;
+                                        else if (vizeSayisi > 0)
+                                            ortalama = vize;
+                                        else if (finalSayisi > 0)
+                                            ortalama = final;
+                                        var gecti = ortalama.HasValue && ortalama.Value >= 50;
+                                        var ortClass = ortalama == null ? "secondary" : ortalama >= 85 ? "success" : ortalama >= 50 ? "warning" : "danger";
+
+                                        <div class="accordion-item border-0 border-bottom">
+                                            <h2 class="accordion-header">
+                                                <button class="accordion-button collapsed py-2 px-3"
+                                                        type="button"
+                                                        data-bs-toggle="collapse"
+                                                        data-bs-target="#ogrNot_@(od.OgrenciId)_@ders.Id">
+                                                    <div class="d-flex align-items-center gap-3 w-100 flex-wrap">
+                                                        <!-- Avatar -->
+                                                        <div class="avatar-sm" style="width:36px;height:36px;font-size:.75rem;flex-shrink:0;">
+                                                            @od.Ogrenci?.Ad.Substring(0, 1)@od.Ogrenci?.Soyad.Substring(0, 1)
+                                                        </div>
+                                                        <!-- Ad -->
+                                                        <div style="min-width:140px;">
+                                                            <div class="fw-semibold small">@od.Ogrenci?.Ad @od.Ogrenci?.Soyad</div>
+                                                            <div class="ogrenci-no" style="font-size:.7rem;">@od.Ogrenci?.OgrenciNo</div>
+                                                        </div>
+                                                        <!-- Not sayısı + Vize/Final + Geçti/Kaldı -->
+                                                        @if (vizeSayisi > 0)
+                                                        {
+                                                            <span class="badge bg-info text-white">
+                                                                Vize: @vize
+                                                            </span>
+                                                        }
+                                                        @if (finalSayisi > 0)
+                                                        {
+                                                            <span class="badge bg-primary">
+                                                                Final: @final
+                                                            </span>
+                                                        }
+                                                        @if (ortalama.HasValue)
+                                                        {
+                                                            <span class="badge bg-@ortClass fs-6">
+                                                                Ort: @ortalama.Value.ToString("F1")
+                                                            </span>
+                                                            <span class="badge @(gecti ? "bg-success" : "bg-danger") fs-6">
+                                                                <i class="bi @(gecti ? "bi-check-circle" : "bi-x-circle") me-1"></i>
+                                                                @(gecti ? "GEÇTİ" : "KALDI")
+                                                            </span>
+                                                        }
+                                                        else
+                                                        {
+                                                            <span class="badge bg-light text-muted">Not yok</span>
+                                                        }
+                                                    </div>
+                                                </button>
+                                            </h2>
+
+                                            <div id="ogrNot_@(od.OgrenciId)_@ders.Id"
+                                                 class="accordion-collapse collapse">
+                                                <div class="accordion-body p-3">
+
+                                                    <!-- Hızlı Not Ekleme Formu -->
+                                                    <div class="card mb-3" style="border-color:#d1fae5; background:#f0fdf4;">
+                                                        <div class="card-body p-3">
+                                                            <h6 class="text-success mb-2">
+                                                                <i class="bi bi-plus-circle me-1"></i>Yeni Not Ekle
+                                                            </h6>
+                                                            <form asp-action="HizliNotEkle" method="post"
+                                                                  id="frmNot_@(od.OgrenciId)_@ders.Id">
+                                                                @Html.AntiForgeryToken()
+                                                                <input type="hidden" name="ogrenciId" value="@od.OgrenciId" />
+                                                                <input type="hidden" name="dersId" value="@ders.Id" />
+                                                                <div class="row g-2">
+                                                                    <div class="col-md-2">
+                                                                        <label class="form-label small fw-semibold">Not Türü</label>
+                                                                        <select name="notTuru" class="form-select form-select-sm"
+                                                                                id="notTuru_@(od.OgrenciId)_@ders.Id">
+                                                                            @foreach (var tur in notTurleri)
+                                                                            {
+                                                                                <option value="@tur">@tur</option>
+                                                                            }
+                                                                        </select>
+                                                                    </div>
+                                                                    <div class="col-md-2">
+                                                                        <label class="form-label small fw-semibold">Not (0-100)</label>
+                                                                        <input type="number" name="notDegeri"
+                                                                               min="0" max="100" step="0.5"
+                                                                               class="form-control form-control-sm"
+                                                                               placeholder="85"
+                                                                               id="notDeger_@(od.OgrenciId)_@ders.Id"
+                                                                               required />
+                                                                    </div>
+                                                                    <div class="col-md-2">
+                                                                        <label class="form-label small fw-semibold">Tarih</label>
+                                                                        <input type="date" name="tarih"
+                                                                               value="@DateTime.Today.ToString("yyyy-MM-dd")"
+                                                                               class="form-control form-control-sm"
+                                                                               id="notTarih_@(od.OgrenciId)_@ders.Id" />
+                                                                    </div>
+                                                                    <div class="col-md-4">
+                                                                        <label class="form-label small fw-semibold">Açıklama (opsiyonel)</label>
+                                                                        <input type="text" name="aciklama"
+                                                                               class="form-control form-control-sm"
+                                                                               placeholder="örn: 5. hafta sınavı"
+                                                                               id="notAciklama_@(od.OgrenciId)_@ders.Id" />
+                                                                    </div>
+                                                                    <div class="col-md-2 d-flex align-items-end">
+                                                                        <button type="submit"
+                                                                                class="btn btn-success btn-sm w-100"
+                                                                                id="btnNotKaydet_@(od.OgrenciId)_@ders.Id">
+                                                                            <i class="bi bi-floppy me-1"></i>Kaydet
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
+                                                            </form>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Mevcut Notlar Tablosu -->
+                                                    @if (ogrenciNotlar.Any())
+                                                    {
+                                                        <div class="table-responsive">
+                                                            <table class="table table-sm mb-0" id="tblNot_@(od.OgrenciId)_@ders.Id">
+                                                                <thead class="table-light">
+                                                                    <tr>
+                                                                        <th>Not Türü</th>
+                                                                        <th>Not</th>
+                                                                        <th>Tarih</th>
+                                                                        <th>Açıklama</th>
+                                                                        <th class="text-end">Sil</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    @foreach (var not in ogrenciNotlar)
+                                                                    {
+                                                                        var notClass = not.NotDegeri >= 85 ? "success" : not.NotDegeri >= 60 ? "warning" : "danger";
+                                                                        <tr>
+                                                                            <td>
+                                                                                <span class="badge bg-secondary">@not.NotTuru</span>
+                                                                            </td>
+                                                                            <td>
+                                                                                <span class="badge bg-@notClass fs-6">@not.NotDegeri</span>
+                                                                            </td>
+                                                                            <td class="text-muted small">@not.Tarih.ToString("dd.MM.yyyy")</td>
+                                                                            <td class="text-muted small">@(not.Aciklama ?? "-")</td>
+                                                                            <td class="text-end">
+                                                                                <form asp-action="HizliNotSil" method="post" style="display:inline;">
+                                                                                    @Html.AntiForgeryToken()
+                                                                                    <input type="hidden" name="notId" value="@not.Id" />
+                                                                                    <button type="submit"
+                                                                                            class="btn btn-sm btn-outline-danger p-1 px-2"
+                                                                                            onclick="return confirm('Bu notu silmek istediğinizden emin misiniz?')"
+                                                                                            id="btnNotSil_@not.Id">
+                                                                                        <i class="bi bi-trash"></i>
+                                                                                    </button>
+                                                                                </form>
+                                                                            </td>
+                                                                        </tr>
+                                                                    }
+                                                                </tbody>
+                                                                <tfoot class="table-light">
+                                                                    <tr>
+                                                                        <td class="fw-semibold">Vize (%40)</td>
+                                                                        <td>
+                                                                            @if (vizeSayisi > 0)
+                                                                            {
+                                                                                <span class="badge bg-info text-white fs-6">@vize</span>
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                <span class="text-muted small">Girilmedi</span>
+                                                                            }
+                                                                        </td>
+                                                                        <td class="fw-semibold">Final (%60)</td>
+                                                                        <td>
+                                                                            @if (finalSayisi > 0)
+                                                                            {
+                                                                                <span class="badge bg-primary fs-6">@final</span>
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                <span class="text-muted small">Girilmedi</span>
+                                                                            }
+                                                                        </td>
+                                                                        <td>
+                                                                            @if (ortalama.HasValue)
+                                                                            {
+                                                                                <span class="badge bg-@ortClass fs-6">Ort: @ortalama.Value.ToString("F1")</span>
+                                                                                <span class="badge @(gecti ? "bg-success" : "bg-danger") ms-1">
+                                                                                    @(gecti ? "GEÇTİ" : "KALDI")
+                                                                                </span>
+                                                                            }
+                                                                        </td>
+                                                                    </tr>
+                                                                </tfoot>
+                                                            </table>
+                                                        </div>
+                                                    }
+                                                    else
+                                                    {
+                                                        <div class="text-muted small p-2">
+                                                            <i class="bi bi-info-circle me-1"></i>Bu öğrenci için henüz not girilmemiş.
+                                                        </div>
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+
+                                <!-- Ders Genel Özeti -->
+                                <div class="p-3 border-top d-flex gap-4 flex-wrap" style="background:#f8fafc; font-size:.82rem;">
+                                    <span class="text-muted">
+                                        <i class="bi bi-people-fill me-1 text-primary"></i>
+                                        <strong>@ogrenciler.Count</strong> öğrenci
+                                    </span>
+                                    <span class="text-muted">
+                                        <i class="bi bi-journal-check me-1 text-success"></i>
+                                        <strong>@dersinNotlari.Count</strong> not kaydı
+                                    </span>
+                                    @{
+                                        var gecenler = ogrenciler.Count(od =>
+                                        {
+                                            var nv = dersinNotlari.Where(n => n.OgrenciId == od.OgrenciId && n.NotTuru == "Vize").Select(n => n.NotDegeri).LastOrDefault();
+                                            var nf = dersinNotlari.Where(n => n.OgrenciId == od.OgrenciId && n.NotTuru == "Final").Select(n => n.NotDegeri).LastOrDefault();
+                                            var vSayisi = dersinNotlari.Count(n => n.OgrenciId == od.OgrenciId && n.NotTuru == "Vize");
+                                            var fSayisi = dersinNotlari.Count(n => n.OgrenciId == od.OgrenciId && n.NotTuru == "Final");
+                                            double? avg = null;
+                                            if (vSayisi > 0 && fSayisi > 0) avg = nv * 0.4 + nf * 0.6;
+                                            else if (vSayisi > 0) avg = nv;
+                                            else if (fSayisi > 0) avg = nf;
+                                            return avg.HasValue && avg.Value >= 50;
+                                        });
+                                    }
+                                    <span class="text-muted">
+                                        <i class="bi bi-check-circle me-1 text-success"></i>
+                                        <strong>@gecenler</strong> öğrenci geçti (ort ≥50)
+                                    </span>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

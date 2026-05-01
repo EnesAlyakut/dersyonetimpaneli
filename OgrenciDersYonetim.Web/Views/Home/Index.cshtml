@@ -1,0 +1,294 @@
+@model OgrenciDersYonetim.Web.Models.ViewModels.DashboardViewModel
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<div class="page-header">
+    <div class="container">
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+            <div>
+                <h1 class="page-title">
+                    @if (Model.Rol == "Admin")
+                    {
+                        <i class="bi bi-shield-fill-check me-2 text-primary"></i>
+                    }
+                    else if (Model.Rol == "Ogretmen")
+                    {
+                        <i class="bi bi-person-video3 me-2 text-warning"></i>
+                    }
+                    else
+                    {
+                        <i class="bi bi-mortarboard me-2 text-success"></i>
+                    }
+                    @(Model.Rol == "Admin" ? "Yönetim Paneli" : Model.Rol == "Ogretmen" ? "Öğretmen Paneli" : "Öğrenci Paneli")
+                </h1>
+                <p class="page-subtitle">Hoşgeldiniz, <strong>@Model.KullaniciAdi</strong> &nbsp;&middot;&nbsp;
+                    <span class="role-badge @Model.Rol.ToLower()">@Model.Rol</span>
+                </p>
+            </div>
+            <div class="text-muted small">
+                <i class="bi bi-clock me-1"></i>@DateTime.Now.ToString("dd MMMM yyyy, HH:mm", new System.Globalization.CultureInfo("tr-TR"))
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <!-- İstatistik Kartları -->
+    @if (Model.Rol == "Admin")
+    {
+        <div class="row g-4 mb-4">
+            <div class="col-sm-6 col-xl-3">
+                <a asp-controller="Ogrenci" asp-action="Index" class="text-decoration-none">
+                    <div class="stat-card stat-card-blue">
+                        <div class="stat-label">Toplam Öğrenci</div>
+                        <div class="stat-number">@Model.ToplamOgrenci</div>
+                        <div class="mt-2 small" style="opacity:0.8;">
+                            <i class="bi bi-arrow-right me-1"></i>Tüm öğrencileri gör
+                        </div>
+                        <i class="bi bi-people-fill stat-icon"></i>
+                    </div>
+                </a>
+            </div>
+            <div class="col-sm-6 col-xl-3">
+                <a asp-controller="Ogretmen" asp-action="Index" class="text-decoration-none">
+                    <div class="stat-card stat-card-teal">
+                        <div class="stat-label">Toplam Öğretmen</div>
+                        <div class="stat-number">@Model.ToplamOgretmen</div>
+                        <div class="mt-2 small" style="opacity:0.8;">
+                            <i class="bi bi-arrow-right me-1"></i>Öğretmenleri yönet
+                        </div>
+                        <i class="bi bi-person-video3 stat-icon"></i>
+                    </div>
+                </a>
+            </div>
+            <div class="col-sm-6 col-xl-3">
+                <a asp-controller="Ders" asp-action="Index" class="text-decoration-none">
+                    <div class="stat-card stat-card-green">
+                        <div class="stat-label">Toplam Ders</div>
+                        <div class="stat-number">@Model.ToplamDers</div>
+                        <div class="mt-2 small" style="opacity:0.8;">
+                            <i class="bi bi-arrow-right me-1"></i>Tüm dersleri gör
+                        </div>
+                        <i class="bi bi-book-fill stat-icon"></i>
+                    </div>
+                </a>
+            </div>
+            <div class="col-sm-6 col-xl-3">
+                <a asp-controller="Atama" asp-action="Index" class="text-decoration-none">
+                    <div class="stat-card" style="background:linear-gradient(135deg,#7c3aed,#5b21b6);color:white;position:relative;overflow:hidden;border-radius:1rem;padding:1.5rem;display:block;">
+                        <div class="stat-label" style="opacity:0.85;font-size:0.82rem;letter-spacing:.04em;text-transform:uppercase;font-weight:600;">Toplam Atama</div>
+                        <div class="stat-number" style="font-size:2.5rem;font-weight:700;line-height:1;">@Model.ToplamAtama</div>
+                        <div class="mt-2 small" style="opacity:0.8;">
+                            <i class="bi bi-arrow-right me-1"></i>Ders atamalarına git
+                        </div>
+                        <i class="bi bi-link-45deg" style="position:absolute;right:1rem;bottom:1rem;font-size:3.5rem;opacity:0.15;"></i>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <!-- Admin Hızlı Menü -->
+        <div class="row g-4 mb-4">
+            <div class="col-md-6 col-lg">
+                <a asp-controller="Ogrenci" asp-action="Ekle" class="text-decoration-none" id="btnHizliOgrenciEkle">
+                    <div class="card text-center p-3 h-100 border-0 shadow-sm" style="background:linear-gradient(135deg,#ede9fe,#ddd6fe);">
+                        <div style="font-size:2rem; color:#7c3aed;"><i class="bi bi-person-plus-fill"></i></div>
+                        <div class="mt-2 fw-semibold" style="color:#5b21b6;">Öğrenci Ekle</div>
+                        <small class="text-muted">Yeni öğrenci kaydı</small>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-6 col-lg">
+                <a asp-controller="Ogretmen" asp-action="Ekle" class="text-decoration-none" id="btnHizliOgretmenEkle">
+                    <div class="card text-center p-3 h-100 border-0 shadow-sm" style="background:linear-gradient(135deg,#fef3c7,#fde68a);">
+                        <div style="font-size:2rem; color:#d97706;"><i class="bi bi-person-video3"></i></div>
+                        <div class="mt-2 fw-semibold" style="color:#b45309;">Öğretmen Ekle</div>
+                        <small class="text-muted">Yeni öğretmen kaydı</small>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-6 col-lg">
+                <a asp-controller="Ders" asp-action="Ekle" class="text-decoration-none" id="btnHizliDersEkle">
+                    <div class="card text-center p-3 h-100 border-0 shadow-sm" style="background:linear-gradient(135deg,#cffafe,#a5f3fc);">
+                        <div style="font-size:2rem; color:#0891b2;"><i class="bi bi-journal-plus"></i></div>
+                        <div class="mt-2 fw-semibold" style="color:#0e7490;">Ders Ekle</div>
+                        <small class="text-muted">Yeni ders oluştur</small>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-6 col-lg">
+                <a asp-controller="Atama" asp-action="Index" class="text-decoration-none" id="btnHizliAtama">
+                    <div class="card text-center p-3 h-100 border-0 shadow-sm" style="background:linear-gradient(135deg,#d1fae5,#a7f3d0);">
+                        <div style="font-size:2rem; color:#059669;"><i class="bi bi-diagram-3-fill"></i></div>
+                        <div class="mt-2 fw-semibold" style="color:#047857;">Öğrenciye Ders Ata</div>
+                        <small class="text-muted">Öğrenciye ders ata</small>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-6 col-lg">
+                <a asp-controller="Ogretmen" asp-action="Index" class="text-decoration-none" id="btnHizliOgretmenDersAta">
+                    <div class="card text-center p-3 h-100 border-0 shadow-sm" style="background:linear-gradient(135deg,#fce7f3,#fbcfe8);">
+                        <div style="font-size:2rem; color:#be185d;"><i class="bi bi-person-lines-fill"></i></div>
+                        <div class="mt-2 fw-semibold" style="color:#9d174d;">Öğretmene Ders Ata</div>
+                        <small class="text-muted">Öğretmen → ders yönetimi</small>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <!-- Son Eklenenler -->
+        <div class="row g-4">
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-header d-flex align-items-center justify-content-between">
+                        <span><i class="bi bi-people me-2 text-primary"></i>Son Eklenen Öğrenciler</span>
+                        <a asp-controller="Ogrenci" asp-action="Index" class="btn btn-sm btn-outline-primary">Tümü</a>
+                    </div>
+                    <div class="card-body">
+                        @if (Model.SonEklenenOgrenciler.Any())
+                        {
+                            @foreach (var ogrenci in Model.SonEklenenOgrenciler)
+                            {
+                                <div class="quick-list-item">
+                                    <div class="quick-dot"></div>
+                                    <span>@ogrenci</span>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <div class="empty-state py-3">
+                                <i class="bi bi-person-x"></i>
+                                <p class="small mb-0">Henüz öğrenci eklenmedi</p>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-header d-flex align-items-center justify-content-between">
+                        <span><i class="bi bi-book me-2 text-info"></i>Son Eklenen Dersler</span>
+                        <a asp-controller="Ders" asp-action="Index" class="btn btn-sm btn-outline-info">Tümü</a>
+                    </div>
+                    <div class="card-body">
+                        @if (Model.SonEklenenDersler.Any())
+                        {
+                            @foreach (var ders in Model.SonEklenenDersler)
+                            {
+                                <div class="quick-list-item">
+                                    <div class="quick-dot" style="background:#06b6d4;"></div>
+                                    <span>@ders</span>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <div class="empty-state py-3">
+                                <i class="bi bi-journal-x"></i>
+                                <p class="small mb-0">Henüz ders eklenmedi</p>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else if (Model.Rol == "Ogretmen")
+    {
+        <!-- Öğretmen Hızlı Menü -->
+        <div class="row g-4 mb-4">
+            <div class="col-md-4">
+                <a asp-controller="Ogretmen" asp-action="Panelim" class="text-decoration-none" id="btnHizliDerslerim">
+                    <div class="stat-card stat-card-teal">
+                        <div class="stat-label">Derslerim</div>
+                        <div class="stat-number">@Model.ToplamDers</div>
+                        <div class="mt-2 small" style="opacity:0.8;">
+                            <i class="bi bi-arrow-right me-1"></i>Panelime git
+                        </div>
+                        <i class="bi bi-journal-text stat-icon"></i>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-4">
+                <a asp-controller="Ogrenci" asp-action="Index" class="text-decoration-none" id="btnHizliOgrencilerim">
+                    <div class="stat-card stat-card-blue">
+                        <div class="stat-label">Öğrencilerim</div>
+                        <div class="stat-number">@Model.ToplamOgrenci</div>
+                        <div class="mt-2 small" style="opacity:0.8;">
+                            <i class="bi bi-arrow-right me-1"></i>Öğrencilere git
+                        </div>
+                        <i class="bi bi-people-fill stat-icon"></i>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-4">
+                <a asp-controller="Account" asp-action="Profil" class="text-decoration-none" id="btnHizliProfil">
+                    <div class="stat-card stat-card-green">
+                        <div class="stat-label">Profilim</div>
+                        <div class="stat-number"><i class="bi bi-person-gear" style="font-size:2rem;"></i></div>
+                        <div class="mt-2 small" style="opacity:0.8;">
+                            <i class="bi bi-arrow-right me-1"></i>Hesap ayarları
+                        </div>
+                        <i class="bi bi-gear stat-icon"></i>
+                    </div>
+                </a>
+            </div>
+        </div>
+        <div class="row g-4">
+            <div class="col-12">
+                <div class="alert alert-info shadow-sm">
+                    <i class="bi bi-info-circle-fill me-2"></i>
+                    Derslerinize öğrenci eklemek, not ve devamsızlık girmek için
+                    <a asp-controller="Ogretmen" asp-action="Panelim" class="alert-link">Öğretmen Paneli</a>'ni kullanın.
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-header d-flex align-items-center justify-content-between">
+                        <span><i class="bi bi-book me-2 text-info"></i>Derslerim</span>
+                        <a asp-controller="Ogretmen" asp-action="Panelim" class="btn btn-sm btn-outline-info">Panele Git</a>
+                    </div>
+                    <div class="card-body">
+                        @if (Model.SonEklenenDersler.Any())
+                        {
+                            @foreach (var ders in Model.SonEklenenDersler)
+                            {
+                                <div class="quick-list-item">
+                                    <div class="quick-dot" style="background:#06b6d4;"></div>
+                                    <span>@ders</span>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <div class="empty-state py-3">
+                                <i class="bi bi-journal-x"></i>
+                                <p class="small mb-0">Size henüz ders atanmamış</p>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <span><i class="bi bi-lightning-fill me-2 text-warning"></i>Hızlı İşlemler</span>
+                    </div>
+                    <div class="card-body d-flex flex-column gap-2">
+                        <a asp-controller="Ogretmen" asp-action="Panelim" class="btn btn-outline-warning w-100" id="btnPanelimGit">
+                            <i class="bi bi-person-video3 me-2"></i>Öğretmen Panelime Git
+                        </a>
+                        <a asp-controller="Atama" asp-action="Index" class="btn btn-outline-success w-100" id="btnAtamaGit">
+                            <i class="bi bi-person-plus me-2"></i>Öğrenci Ata
+                        </a>
+                        <a asp-controller="Account" asp-action="Profil" class="btn btn-outline-secondary w-100" id="btnProfilGit">
+                            <i class="bi bi-person-circle me-2"></i>Profilimi Düzenle
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>

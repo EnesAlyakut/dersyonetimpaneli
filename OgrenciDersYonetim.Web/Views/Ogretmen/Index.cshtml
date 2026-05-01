@@ -1,0 +1,113 @@
+@model List<OgrenciDersYonetim.Core.Entities.Ogretmen>
+@{
+    ViewData["Title"] = "Öğretmen Listesi";
+}
+
+<div class="page-header">
+    <div class="container">
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+            <div>
+                <h1 class="page-title"><i class="bi bi-person-video3 me-2 text-warning"></i>Öğretmenler</h1>
+                <p class="page-subtitle">Sistemdeki tüm öğretmenler</p>
+            </div>
+            <a asp-action="Ekle" class="btn btn-primary" id="btnOgretmenEkle">
+                <i class="bi bi-person-plus-fill me-2"></i>Yeni Öğretmen
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="table-wrapper">
+        @if (Model.Any())
+        {
+            <table class="table" id="tblOgretmenler">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Ad Soyad</th>
+                        <th>Branş</th>
+                        <th>E-posta</th>
+                        <th>Ders Sayısı</th>
+                        <th>Hesap Durumu</th>
+                        <th class="text-end">İşlemler</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (int i = 0; i < Model.Count; i++)
+                    {
+                        var ogretmen = Model[i];
+                        <tr>
+                            <td class="text-muted">@(i + 1)</td>
+                            <td>
+                                <div class="d-flex align-items-center gap-2">
+                                    <div class="avatar-sm" style="width:36px;height:36px;font-size:.85rem;">
+                                        @ogretmen.Ad.Substring(0, 1)@ogretmen.Soyad.Substring(0, 1)
+                                    </div>
+                                    <div>
+                                        <div class="fw-semibold">@ogretmen.Ad @ogretmen.Soyad</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="text-muted small">@(ogretmen.Brans ?? "-")</td>
+                            <td class="text-muted small">@(ogretmen.Email ?? "-")</td>
+                            <td>
+                                <span class="badge bg-info text-white">@ogretmen.OgretmenDersler.Count ders</span>
+                            </td>
+                            <td>
+                                @if (ogretmen.Kullanici != null)
+                                {
+                                    <span class="badge bg-success"><i class="bi bi-check-circle me-1"></i>Hesap Var</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">Hesap Yok</span>
+                                }
+                            </td>
+                            <td class="text-end">
+                                <div class="d-flex gap-1 justify-content-end flex-wrap">
+                                    <!-- Ders Yönet (Detay = ders atama + öğrenci görme) -->
+                                    <a asp-action="Detay" asp-route-id="@ogretmen.Id"
+                                       class="btn btn-sm btn-success" title="Ders Ata / Yönet"
+                                       id="btnOgretmenDersYonet_@ogretmen.Id">
+                                        <i class="bi bi-book-fill me-1"></i>Ders Yönet
+                                    </a>
+                                    <a asp-action="Detay" asp-route-id="@ogretmen.Id" class="btn btn-sm btn-outline-primary" title="Detay" id="btnOgretmenDetay_@ogretmen.Id">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    <a asp-action="Guncelle" asp-route-id="@ogretmen.Id" class="btn btn-sm btn-outline-warning" title="Düzenle" id="btnOgretmenGuncelle_@ogretmen.Id">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <!-- Şifre Belirle -->
+                                    <a asp-controller="Account" asp-action="SifreYonetimi"
+                                       class="btn btn-sm btn-outline-info" title="Şifre Belirle"
+                                       id="btnOgretmenSifre_@ogretmen.Id">
+                                        <i class="bi bi-key"></i>
+                                    </a>
+                                    <form asp-action="Sil" method="post" style="display:inline;" onsubmit="return confirm('@ogretmen.TamAd öğretmenini silmek istediğinizden emin misiniz?')">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="id" value="@ogretmen.Id" />
+                                        <button type="submit" class="btn btn-sm btn-outline-danger" title="Sil" id="btnOgretmenSil_@ogretmen.Id">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <div class="empty-state">
+                <i class="bi bi-person-x"></i>
+                <h5>Öğretmen Bulunamadı</h5>
+                <p class="small">Henüz öğretmen eklenmemiş.</p>
+                <a asp-action="Ekle" class="btn btn-primary mt-2">
+                    <i class="bi bi-person-plus me-2"></i>Öğretmen Ekle
+                </a>
+            </div>
+        }
+    </div>
+</div>

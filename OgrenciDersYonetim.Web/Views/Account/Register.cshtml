@@ -1,0 +1,99 @@
+@model OgrenciDersYonetim.Web.Models.ViewModels.RegisterViewModel
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Kayıt Ol";
+}
+
+<div class="auth-wrapper">
+    <div class="auth-card fade-in" style="max-width:520px;">
+        <div class="auth-logo">
+            <i class="bi bi-person-plus-fill"></i>
+        </div>
+        <div class="text-center mb-4">
+            <h2>Hesap Oluşturun</h2>
+            <p class="text-muted">Sisteme kaydolmak için aşağıdaki formu doldurun</p>
+        </div>
+
+        <form asp-action="Register" method="post" id="registerForm">
+            @Html.AntiForgeryToken()
+
+            <div class="row g-3">
+                <div class="col-6">
+                    <label asp-for="Ad" class="form-label">Ad</label>
+                    <input asp-for="Ad" class="form-control" placeholder="Adınız" id="txtAd" />
+                    <span asp-validation-for="Ad" class="text-danger small"></span>
+                </div>
+                <div class="col-6">
+                    <label asp-for="Soyad" class="form-label">Soyad</label>
+                    <input asp-for="Soyad" class="form-control" placeholder="Soyadınız" id="txtSoyad" />
+                    <span asp-validation-for="Soyad" class="text-danger small"></span>
+                </div>
+
+                <div class="col-12">
+                    <label asp-for="KullaniciAdi" class="form-label"><i class="bi bi-person me-1"></i>Kullanıcı Adı</label>
+                    <input asp-for="KullaniciAdi" class="form-control" placeholder="kullanici_adi" id="txtKullaniciAdi" autocomplete="username" />
+                    <span asp-validation-for="KullaniciAdi" class="text-danger small"></span>
+                </div>
+
+                <div class="col-12">
+                    <label asp-for="Email" class="form-label"><i class="bi bi-envelope me-1"></i>E-posta</label>
+                    <input asp-for="Email" class="form-control" placeholder="ornek@email.com" id="txtEmail" autocomplete="email" />
+                    <span asp-validation-for="Email" class="text-danger small"></span>
+                </div>
+
+                <div class="col-12">
+                    <label asp-for="Rol" class="form-label"><i class="bi bi-shield me-1"></i>Rol</label>
+                    <select asp-for="Rol" class="form-select" id="selRol">
+                        <option value="Ogrenci">Öğrenci</option>
+                        <option value="Ogretmen">Öğretmen</option>
+                        <option value="Admin">Admin</option>
+                    </select>
+                    <span asp-validation-for="Rol" class="text-danger small"></span>
+                </div>
+
+                <div class="col-12">
+                    <label asp-for="Sifre" class="form-label"><i class="bi bi-lock me-1"></i>Şifre</label>
+                    <div class="input-group">
+                        <input asp-for="Sifre" type="password" class="form-control" placeholder="En az 6 karakter" id="txtSifre" autocomplete="new-password" />
+                        <button type="button" class="btn btn-outline-secondary" id="toggleSifre" tabindex="-1">
+                            <i class="bi bi-eye" id="sifreIcon"></i>
+                        </button>
+                    </div>
+                    <span asp-validation-for="Sifre" class="text-danger small"></span>
+                </div>
+
+                <div class="col-12">
+                    <label asp-for="SifreTekrar" class="form-label"><i class="bi bi-lock-fill me-1"></i>Şifre Tekrar</label>
+                    <input asp-for="SifreTekrar" type="password" class="form-control" placeholder="Şifrenizi tekrar giriniz" id="txtSifreTekrar" autocomplete="new-password" />
+                    <span asp-validation-for="SifreTekrar" class="text-danger small"></span>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100 py-2 mt-4 mb-3" id="btnKayit">
+                <i class="bi bi-person-check-fill me-2"></i>Kayıt Ol
+            </button>
+
+            <div class="text-center">
+                <small class="text-muted">
+                    Zaten hesabınız var mı?
+                    <a asp-action="Login" class="text-primary fw-semibold text-decoration-none">Giriş Yapın</a>
+                </small>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.getElementById('toggleSifre').addEventListener('click', function () {
+            const input = document.getElementById('txtSifre');
+            const icon = document.getElementById('sifreIcon');
+            if (input.type === 'password') {
+                input.type = 'text'; icon.className = 'bi bi-eye-slash';
+            } else {
+                input.type = 'password'; icon.className = 'bi bi-eye';
+            }
+        });
+    </script>
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

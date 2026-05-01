@@ -1,0 +1,74 @@
+@model OgrenciDersYonetim.Core.Entities.Ders
+@{
+    ViewData["Title"] = "Yeni Ders Ekle";
+}
+
+<div class="page-header">
+    <div class="container">
+        <div class="d-flex align-items-center gap-3">
+            <a asp-action="Index" class="btn btn-sm btn-outline-secondary">
+                <i class="bi bi-arrow-left me-1"></i>Geri
+            </a>
+            <div>
+                <h1 class="page-title"><i class="bi bi-journal-plus me-2 text-primary"></i>Yeni Ders Ekle</h1>
+                <p class="page-subtitle">Sisteme yeni ders ekleyin</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-body p-4">
+                    <form asp-action="Ekle" method="post" id="frmDersEkle">
+                        @Html.AntiForgeryToken()
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                        <div class="row g-3">
+                            <div class="col-md-8">
+                                <label asp-for="DersAdi" class="form-label fw-semibold">Ders Adı <span class="text-danger">*</span></label>
+                                <input asp-for="DersAdi" class="form-control" placeholder="Örn: Matematik" id="inputDersAdi" />
+                                <span asp-validation-for="DersAdi" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-4">
+                                <label asp-for="DersKodu" class="form-label fw-semibold">Ders Kodu <span class="text-danger">*</span></label>
+                                <input asp-for="DersKodu" class="form-control" placeholder="Örn: MAT101" id="inputDersKodu" />
+                                <span asp-validation-for="DersKodu" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-4">
+                                <label asp-for="Kredi" class="form-label fw-semibold">Kredi <span class="text-danger">*</span></label>
+                                <input asp-for="Kredi" type="number" min="1" max="10" class="form-control" id="inputKredi" />
+                                <span asp-validation-for="Kredi" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-8">
+                                <label asp-for="Ogretmen" class="form-label fw-semibold">Öğretmen</label>
+                                <input asp-for="Ogretmen" class="form-control" placeholder="Örn: Prof. Dr. Ali Veli" id="inputOgretmenAdi" />
+                                <span asp-validation-for="Ogretmen" class="text-danger small"></span>
+                            </div>
+                            <div class="col-12">
+                                <label asp-for="Aciklama" class="form-label fw-semibold">Açıklama</label>
+                                <textarea asp-for="Aciklama" class="form-control" rows="3" placeholder="Ders hakkında kısa bir açıklama..." id="inputAciklama"></textarea>
+                                <span asp-validation-for="Aciklama" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="d-flex gap-2 mt-4">
+                            <button type="submit" class="btn btn-primary" id="btnDersEkleKaydet">
+                                <i class="bi bi-check-circle me-2"></i>Kaydet
+                            </button>
+                            <a asp-action="Index" class="btn btn-outline-secondary">
+                                <i class="bi bi-x-circle me-2"></i>İptal
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

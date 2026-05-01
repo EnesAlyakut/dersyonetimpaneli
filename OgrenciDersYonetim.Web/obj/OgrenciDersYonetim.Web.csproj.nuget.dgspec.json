@@ -1,0 +1,288 @@
+{
+  "format": 1,
+  "restore": {
+    "C:\\Users\\enesa\\OneDrive\\Masaüstü\\proje ödevi\\OgrenciDersYonetim.Web\\OgrenciDersYonetim.Web.csproj": {}
+  },
+  "projects": {
+    "C:\\Users\\enesa\\OneDrive\\Masaüstü\\proje ödevi\\OgrenciDersYonetim.Business\\OgrenciDersYonetim.Business.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\enesa\\OneDrive\\Masaüstü\\proje ödevi\\OgrenciDersYonetim.Business\\OgrenciDersYonetim.Business.csproj",
+        "projectName": "OgrenciDersYonetim.Business",
+        "projectPath": "C:\\Users\\enesa\\OneDrive\\Masaüstü\\proje ödevi\\OgrenciDersYonetim.Business\\OgrenciDersYonetim.Business.csproj",
+        "packagesPath": "C:\\Users\\enesa\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\enesa\\OneDrive\\Masaüstü\\proje ödevi\\OgrenciDersYonetim.Business\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\enesa\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net9.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net9.0": {
+            "targetAlias": "net9.0",
+            "projectReferences": {
+              "C:\\Users\\enesa\\OneDrive\\Masaüstü\\proje ödevi\\OgrenciDersYonetim.Core\\OgrenciDersYonetim.Core.csproj": {
+                "projectPath": "C:\\Users\\enesa\\OneDrive\\Masaüstü\\proje ödevi\\OgrenciDersYonetim.Core\\OgrenciDersYonetim.Core.csproj"
+              },
+              "C:\\Users\\enesa\\OneDrive\\Masaüstü\\proje ödevi\\OgrenciDersYonetim.Data\\OgrenciDersYonetim.Data.csproj": {
+                "projectPath": "C:\\Users\\enesa\\OneDrive\\Masaüstü\\proje ödevi\\OgrenciDersYonetim.Data\\OgrenciDersYonetim.Data.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.200"
+      },
+      "frameworks": {
+        "net9.0": {
+          "targetAlias": "net9.0",
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.203/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "C:\\Users\\enesa\\OneDrive\\Masaüstü\\proje ödevi\\OgrenciDersYonetim.Core\\OgrenciDersYonetim.Core.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\enesa\\OneDrive\\Masaüstü\\proje ödevi\\OgrenciDersYonetim.Core\\OgrenciDersYonetim.Core.csproj",
+        "projectName": "OgrenciDersYonetim.Core",
+        "projectPath": "C:\\Users\\enesa\\OneDrive\\Masaüstü\\proje ödevi\\OgrenciDersYonetim.Core\\OgrenciDersYonetim.Core.csproj",
+        "packagesPath": "C:\\Users\\enesa\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\enesa\\OneDrive\\Masaüstü\\proje ödevi\\OgrenciDersYonetim.Core\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\enesa\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net9.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net9.0": {
+            "targetAlias": "net9.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.200"
+      },
+      "frameworks": {
+        "net9.0": {
+          "targetAlias": "net9.0",
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.203/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "C:\\Users\\enesa\\OneDrive\\Masaüstü\\proje ödevi\\OgrenciDersYonetim.Data\\OgrenciDersYonetim.Data.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\enesa\\OneDrive\\Masaüstü\\proje ödevi\\OgrenciDersYonetim.Data\\OgrenciDersYonetim.Data.csproj",
+        "projectName": "OgrenciDersYonetim.Data",
+        "projectPath": "C:\\Users\\enesa\\OneDrive\\Masaüstü\\proje ödevi\\OgrenciDersYonetim.Data\\OgrenciDersYonetim.Data.csproj",
+        "packagesPath": "C:\\Users\\enesa\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\enesa\\OneDrive\\Masaüstü\\proje ödevi\\OgrenciDersYonetim.Data\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\enesa\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net9.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net9.0": {
+            "targetAlias": "net9.0",
+            "projectReferences": {
+              "C:\\Users\\enesa\\OneDrive\\Masaüstü\\proje ödevi\\OgrenciDersYonetim.Core\\OgrenciDersYonetim.Core.csproj": {
+                "projectPath": "C:\\Users\\enesa\\OneDrive\\Masaüstü\\proje ödevi\\OgrenciDersYonetim.Core\\OgrenciDersYonetim.Core.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.200"
+      },
+      "frameworks": {
+        "net9.0": {
+          "targetAlias": "net9.0",
+          "dependencies": {
+            "Microsoft.EntityFrameworkCore.Design": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[9.0.4, )"
+            },
+            "Microsoft.EntityFrameworkCore.Sqlite": {
+              "target": "Package",
+              "version": "[9.0.4, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.203/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "C:\\Users\\enesa\\OneDrive\\Masaüstü\\proje ödevi\\OgrenciDersYonetim.Web\\OgrenciDersYonetim.Web.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\enesa\\OneDrive\\Masaüstü\\proje ödevi\\OgrenciDersYonetim.Web\\OgrenciDersYonetim.Web.csproj",
+        "projectName": "OgrenciDersYonetim.Web",
+        "projectPath": "C:\\Users\\enesa\\OneDrive\\Masaüstü\\proje ödevi\\OgrenciDersYonetim.Web\\OgrenciDersYonetim.Web.csproj",
+        "packagesPath": "C:\\Users\\enesa\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\enesa\\OneDrive\\Masaüstü\\proje ödevi\\OgrenciDersYonetim.Web\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\enesa\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net9.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net9.0": {
+            "targetAlias": "net9.0",
+            "projectReferences": {
+              "C:\\Users\\enesa\\OneDrive\\Masaüstü\\proje ödevi\\OgrenciDersYonetim.Business\\OgrenciDersYonetim.Business.csproj": {
+                "projectPath": "C:\\Users\\enesa\\OneDrive\\Masaüstü\\proje ödevi\\OgrenciDersYonetim.Business\\OgrenciDersYonetim.Business.csproj"
+              },
+              "C:\\Users\\enesa\\OneDrive\\Masaüstü\\proje ödevi\\OgrenciDersYonetim.Core\\OgrenciDersYonetim.Core.csproj": {
+                "projectPath": "C:\\Users\\enesa\\OneDrive\\Masaüstü\\proje ödevi\\OgrenciDersYonetim.Core\\OgrenciDersYonetim.Core.csproj"
+              },
+              "C:\\Users\\enesa\\OneDrive\\Masaüstü\\proje ödevi\\OgrenciDersYonetim.Data\\OgrenciDersYonetim.Data.csproj": {
+                "projectPath": "C:\\Users\\enesa\\OneDrive\\Masaüstü\\proje ödevi\\OgrenciDersYonetim.Data\\OgrenciDersYonetim.Data.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.200"
+      },
+      "frameworks": {
+        "net9.0": {
+          "targetAlias": "net9.0",
+          "dependencies": {
+            "Microsoft.EntityFrameworkCore.Design": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[9.0.4, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.AspNetCore.App": {
+              "privateAssets": "none"
+            },
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.203/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,215 @@
+@using OgrenciDersYonetim.Core.Entities
+@{
+    var icerikler = ViewData["Icerikler"] as List<DersIcerik> ?? new List<DersIcerik>();
+    var dersId = (int)(ViewData["DersId"] ?? 0);
+    var canEdit = (bool)(ViewData["CanEdit"] ?? false);
+    var rol = ViewData["Rol"] as string;
+
+    var konular = icerikler.Where(i => i.Tur == "Konu").ToList();
+    var odevler = icerikler.Where(i => i.Tur == "Odev").ToList();
+    var duyurular = icerikler.Where(i => i.Tur == "Duyuru").ToList();
+}
+
+<div class="card mb-3">
+    <div class="card-header d-flex align-items-center justify-content-between">
+        <span><i class="bi bi-journal-text me-2 text-success"></i><strong>Ders İçerikleri</strong></span>
+        <span class="badge bg-secondary">@icerikler.Count</span>
+    </div>
+    <div class="card-body p-0">
+        @if (!icerikler.Any())
+        {
+            <div class="empty-state py-4">
+                <i class="bi bi-journal-x"></i>
+                <h6>Henüz içerik eklenmemiş</h6>
+                @if (canEdit)
+                {
+                    <p class="small text-muted">Aşağıdaki formu kullanarak konu, ödev veya duyuru ekleyebilirsiniz.</p>
+                }
+            </div>
+        }
+        else
+        {
+            <ul class="nav nav-tabs px-3 pt-2" id="icerikTab">
+                <li class="nav-item">
+                    <a class="nav-link active small" data-bs-toggle="tab" href="#tabKonu">
+                        <i class="bi bi-book me-1 text-primary"></i>Konular
+                        @if (konular.Any()) { <span class="badge bg-primary ms-1">@konular.Count</span> }
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link small" data-bs-toggle="tab" href="#tabOdev">
+                        <i class="bi bi-pencil-square me-1 text-warning"></i>Ödevler
+                        @if (odevler.Any()) { <span class="badge bg-warning text-dark ms-1">@odevler.Count</span> }
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link small" data-bs-toggle="tab" href="#tabDuyuru">
+                        <i class="bi bi-megaphone me-1 text-info"></i>Duyurular
+                        @if (duyurular.Any()) { <span class="badge bg-info ms-1">@duyurular.Count</span> }
+                    </a>
+                </li>
+            </ul>
+            <div class="tab-content p-3" id="icerikTabContent">
+                <!-- Konular -->
+                <div class="tab-pane fade show active" id="tabKonu">
+                    @if (!konular.Any())
+                    {
+                        <p class="text-muted small text-center py-2">Henüz konu eklenmemiş.</p>
+                    }
+                    else
+                    {
+                        @foreach (var ic in konular)
+                        {
+                            <div class="border rounded-2 p-3 mb-2" style="background:#f8fafc;">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div class="flex-grow-1">
+                                        <div class="fw-semibold small">@ic.Baslik</div>
+                                        <div class="text-muted small mt-1" style="white-space:pre-wrap;">@ic.Icerik</div>
+                                        <div class="text-muted" style="font-size:.7rem;">@ic.EklenmeTarihi.ToString("dd.MM.yyyy HH:mm")</div>
+                                    </div>
+                                    @if (canEdit)
+                                    {
+                                        <form asp-controller="Ders" asp-action="IcerikSil" method="post" style="display:inline;"
+                                              onsubmit="return confirm('Bu içeriği silmek istediğinizden emin misiniz?')">
+                                            <input type="hidden" name="id" value="@ic.Id" />
+                                            <input type="hidden" name="dersId" value="@dersId" />
+                                            <button type="submit" class="btn btn-sm btn-outline-danger ms-2" style="padding:2px 6px;">
+                                                <i class="bi bi-trash" style="font-size:.75rem;"></i>
+                                            </button>
+                                        </form>
+                                    }
+                                </div>
+                            </div>
+                        }
+                    }
+                </div>
+
+                <!-- Ödevler -->
+                <div class="tab-pane fade" id="tabOdev">
+                    @if (!odevler.Any())
+                    {
+                        <p class="text-muted small text-center py-2">Henüz ödev verilmemiş.</p>
+                    }
+                    else
+                    {
+                        @foreach (var ic in odevler)
+                        {
+                            <div class="border rounded-2 p-3 mb-2" style="background:#fffbeb;">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div class="flex-grow-1">
+                                        <div class="fw-semibold small">@ic.Baslik</div>
+                                        @if (ic.SonTeslimTarihi.HasValue)
+                                        {
+                                            <div class="text-warning small"><i class="bi bi-clock me-1"></i>Son teslim: @ic.SonTeslimTarihi.Value.ToString("dd.MM.yyyy")</div>
+                                        }
+                                        <div class="text-muted small mt-1" style="white-space:pre-wrap;">@ic.Icerik</div>
+                                        <div class="text-muted" style="font-size:.7rem;">@ic.EklenmeTarihi.ToString("dd.MM.yyyy HH:mm")</div>
+                                    </div>
+                                    @if (canEdit)
+                                    {
+                                        <form asp-controller="Ders" asp-action="IcerikSil" method="post" style="display:inline;"
+                                              onsubmit="return confirm('Bu içeriği silmek istediğinizden emin misiniz?')">
+                                            <input type="hidden" name="id" value="@ic.Id" />
+                                            <input type="hidden" name="dersId" value="@dersId" />
+                                            <button type="submit" class="btn btn-sm btn-outline-danger ms-2" style="padding:2px 6px;">
+                                                <i class="bi bi-trash" style="font-size:.75rem;"></i>
+                                            </button>
+                                        </form>
+                                    }
+                                </div>
+                            </div>
+                        }
+                    }
+                </div>
+
+                <!-- Duyurular -->
+                <div class="tab-pane fade" id="tabDuyuru">
+                    @if (!duyurular.Any())
+                    {
+                        <p class="text-muted small text-center py-2">Henüz duyuru yok.</p>
+                    }
+                    else
+                    {
+                        @foreach (var ic in duyurular)
+                        {
+                            <div class="border rounded-2 p-3 mb-2" style="background:#e0f7fa;">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div class="flex-grow-1">
+                                        <div class="fw-semibold small">@ic.Baslik</div>
+                                        <div class="text-muted small mt-1" style="white-space:pre-wrap;">@ic.Icerik</div>
+                                        <div class="text-muted" style="font-size:.7rem;">@ic.EklenmeTarihi.ToString("dd.MM.yyyy HH:mm")</div>
+                                    </div>
+                                    @if (canEdit)
+                                    {
+                                        <form asp-controller="Ders" asp-action="IcerikSil" method="post" style="display:inline;"
+                                              onsubmit="return confirm('Bu içeriği silmek istediğinizden emin misiniz?')">
+                                            <input type="hidden" name="id" value="@ic.Id" />
+                                            <input type="hidden" name="dersId" value="@dersId" />
+                                            <button type="submit" class="btn btn-sm btn-outline-danger ms-2" style="padding:2px 6px;">
+                                                <i class="bi bi-trash" style="font-size:.75rem;"></i>
+                                            </button>
+                                        </form>
+                                    }
+                                </div>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- İçerik Ekleme Formu - Sadece Admin ve Öğretmen -->
+@if (canEdit)
+{
+    <div class="card">
+        <div class="card-header">
+            <i class="bi bi-plus-circle me-2 text-success"></i><strong>İçerik Ekle</strong>
+        </div>
+        <div class="card-body">
+            <form asp-controller="Ders" asp-action="IcerikEkle" method="post" id="frmIcerikEkle">
+                <input type="hidden" name="DersId" value="@dersId" />
+
+                <div class="mb-2">
+                    <label class="form-label fw-semibold small">Tür</label>
+                    <select name="Tur" class="form-select form-select-sm" id="selectIcerikTur">
+                        <option value="Konu">📚 Konu</option>
+                        <option value="Odev">✏️ Ödev</option>
+                        <option value="Duyuru">📢 Duyuru</option>
+                    </select>
+                </div>
+
+                <div class="mb-2">
+                    <label class="form-label fw-semibold small">Başlık</label>
+                    <input name="Baslik" class="form-control form-control-sm" placeholder="Ör: 3. Hafta - Türevler" required maxlength="200" />
+                </div>
+
+                <div class="mb-2">
+                    <label class="form-label fw-semibold small">İçerik / Açıklama</label>
+                    <textarea name="Icerik" class="form-control form-control-sm" rows="3" placeholder="Detayları buraya yazın..." required></textarea>
+                </div>
+
+                <div class="mb-3" id="sonTeslimDiv" style="display:none;">
+                    <label class="form-label fw-semibold small">Son Teslim Tarihi (Ödev için)</label>
+                    <input type="date" name="SonTeslimTarihi" class="form-control form-control-sm" />
+                </div>
+
+                <button type="submit" class="btn btn-success btn-sm w-100" id="btnIcerikKaydet">
+                    <i class="bi bi-plus-circle me-1"></i>Ekle
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            var sel = document.getElementById('selectIcerikTur');
+            if (sel) {
+                sel.addEventListener('change', function () {
+                    document.getElementById('sonTeslimDiv').style.display = this.value === 'Odev' ? 'block' : 'none';
+                });
+            }
+        })();
+    </script>
+}
